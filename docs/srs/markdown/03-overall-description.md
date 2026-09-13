@@ -21,16 +21,27 @@ TODO
 TODO
 
 ## 2.4 Operating Environment
-<!-- Browser support, OS for the server, any hosting assumptions. Reference your deployment decision here. -->
+<!-- Browser support, OS for the server, any hosting assumptions. -->
 
 TODO
+
+<!-- Cite the deployment decision, e.g.: "Per stakeholder discussion,
+     DD-Mon-YYYY (Appendix D), the system will be self-hosted via Docker." -->
 
 ## 2.5 Design and Implementation Constraints
 <!-- Chosen stack, self-hosted vs cloud decision, language/framework mandates, security considerations. -->
 
 TODO
 
+<!-- Cite the stack decision the same way, referencing the relevant
+     Appendix D entry rather than just stating the conclusion. -->
+
 ## 2.6 Assumptions and Dependencies
-<!-- E.g. assumes single institution, assumes no real customer - reference hypothetical stakeholder discussion. -->
+<!-- E.g. assumes single institution scale, single term of data, etc. -->
 
 TODO
+
+<!-- Include explicitly: "No real customer was available for this academic
+     project; a hypothetical stakeholder (Appendix D) was used to ground
+     scope and design decisions." This is the assumption itself, not a
+     footnote — call it out as one. -->

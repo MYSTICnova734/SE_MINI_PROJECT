@@ -22,6 +22,7 @@ pandoc \
   markdown/appendix-a-glossary.md \
   markdown/appendix-b-field-layouts.md \
   markdown/appendix-c-traceability.md \
+  markdown/appendix-d-stakeholder-log.md \
   -o SRS.pdf \
   --pdf-engine=xelatex \
   -V date="Generated ${BUILD_DATE}"

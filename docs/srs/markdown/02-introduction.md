@@ -11,9 +11,12 @@ TODO
 TODO
 
 ## 1.3 Product Scope
-<!-- 2-3 sentences: what the system does, who it's for, why it's useful. Reference the hypothetical customer discussion here. -->
+<!-- 2-3 sentences: what the system does, who it's for, why it's useful. -->
 
 TODO
+
+<!-- Add one sentence like: "Scope was defined following stakeholder discussion
+     (see Appendix D) with a hypothetical institution stakeholder." -->
 
 ## 1.4 References
 <!-- List: this project guideline doc, any style guides, the hypothetical customer meeting notes if you keep them separately. -->
