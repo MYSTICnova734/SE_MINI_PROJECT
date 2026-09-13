@@ -1,0 +1,32 @@
+name: Build SRS PDF
+
+# Runs whenever the SRS Markdown changes on main, rebuilds the PDF,
+# and commits it back to docs/srs/SRS.pdf (overwriting the previous version).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/srs/markdown/**"
+
+permissions:
+  contents: write
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc + LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-latex-recommended lmodern
+
+      - name: Build PDF
+        run: bash docs/srs/build.sh
+
+      - name: Commit built PDF
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-build SRS.pdf [skip ci]"
+          file_pattern: docs/srs/SRS.pdf

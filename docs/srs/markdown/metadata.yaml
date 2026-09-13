@@ -1,0 +1,14 @@
+---
+title: "Software Requirements Specification"
+subtitle: "Jackfruit Phase-1 — Student Record System"
+author:
+  - "Name 1, SRN"
+  - "Name 2, SRN"
+  - "Name 3, SRN"
+date: \today
+toc: true
+toc-depth: 3
+numbersections: true
+geometry: margin=1in
+fontsize: 11pt
+---
