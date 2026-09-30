@@ -169,11 +169,113 @@ TODO
 ## 5.6 Role-Based Access
 
 ### 5.6.1 Description and Priority
-TODO
+
+**Description.** Role-Based Access Control (RBAC) decides which functions and records each authenticated user may use in the Student Record System. Access is strictly role-based. Every account has exactly one role: Admin, Teacher or Student. A role is assigned when the account is created (see Section 5.1), and only an Admin can change it afterwards. Permissions are enforced in both the frontend and the backend, and the backend is the authoritative enforcement layer. The frontend only hides or disables functions to help the user. Any action or record not explicitly permitted to a role is denied (deny by default).
+
+**Priority:** High. Every feature that reads or modifies student data (Sections 5.2 to 5.5) depends on correct authorization. A failure here would expose or corrupt student records.
+
+**Authentication vs. authorization.** Authentication (Section 5.1 and Section 6.3) establishes who the user is. Authorization (this section) decides what that user is allowed to do. A valid login does not by itself grant access to any function or record.
+
+**Roles and permissions.**
+
+| Role | Permitted | Scope boundary | Explicitly not permitted |
+|---|---|---|---|
+| Admin | Create, update and deactivate Student and Teacher accounts; assign and change roles; view and manage student records; manage attendance; manage grades; view all student and teacher records | All relevant records | None defined in this version |
+| Teacher | View assigned students; mark and edit attendance for assigned students; enter and edit grades for assigned students; view relevant academic records of assigned students | Only students assigned to that Teacher | Accessing students outside the assignment; managing accounts or roles |
+| Student | View own profile, attendance, grades and academic records | Only own records | Accessing or modifying other students' records; modifying own grades or attendance |
+
+**Preconditions.**
+- The user holds an account with an assigned role.
+- For protected functions, the user has an authenticated session.
+
+**Assumptions and dependencies.**
+- Account creation and initial credentials are specified in Section 5.1. This section covers only the role and account-status aspects that access control depends on.
+- Attendance rules (for example the edit window) are defined in Section 5.3, and grading rules (for example the rubric) in Section 5.4. RBAC decides whether a role may attempt an action, and those sections decide whether the action's own rules allow it.
+- Session/token mechanism, audit-log retention and audit-log access are defined in Section 6.3.
+- The way a Teacher is assigned to a Student (who performs it and how it is stored) is not yet decided and is marked TBD in this version. RBAC only needs the assignment relationship to exist.
+- Whether the Admin role can be assigned to an existing account through role change is TBD. Section 5.1 creates only Student and Teacher accounts (plus the pre-seeded Admin).
 
 ### 5.6.2 Stimulus/Response Sequences
-TODO
+
+| # | Stimulus (trigger) | System validation | System response |
+|---|---|---|---|
+| SR-1 | Admin requests an Admin-permitted function (e.g. view any student's record, edit grades, deactivate an account). | Session valid; account Active; role is Admin; function permitted for Admin. | Request is processed and the result is shown. |
+| SR-2 | Teacher requests to view, mark attendance for, or enter grades for a student assigned to them. | Session valid; account Active; role is Teacher; target student is assigned to this Teacher. | Request is processed, subject to the rules in Sections 5.3 and 5.4. |
+| SR-3 | Teacher requests a record of a student not assigned to them. | Session valid; role is Teacher; target student is not assigned to this Teacher. | Request denied with "Access Denied/Unauthorized"; no data of the student is returned; the attempt is logged. |
+| SR-4 | Student requests their own profile, attendance, grades or academic records. | Session valid; account Active; role is Student; target record belongs to this Student. | Requested record is displayed read-only. |
+| SR-5 | Student requests another student's record. | Session valid; role is Student; target record does not belong to this Student. | Request denied with "Access Denied/Unauthorized"; no data returned; the attempt is logged. |
+| SR-6 | Student attempts to modify their own grades or attendance. | Session valid; role is Student; modification is not permitted for Student. | Request denied with "Access Denied/Unauthorized"; data unchanged; the attempt is logged. |
+| SR-7 | Any user requests a function not permitted for their role (e.g. Teacher tries to change a role; Student tries to create an account). | Session valid; function not in the permission set of the user's role. | Request denied with "Access Denied/Unauthorized"; no change made; the attempt is logged. |
+| SR-8 | Admin changes a user's role. | Requester is Admin; target account exists; new role is a valid role. | Role is updated and takes effect immediately for all subsequent requests; change is recorded; Admin sees a confirmation. |
+| SR-9 | Non-Admin attempts to assign or change a role. | Requester's role is not Admin. | Request denied with "Access Denied/Unauthorized"; role unchanged; the attempt is logged. |
+| SR-10 | Admin deactivates an account. | Requester is Admin; target account exists and is Active. | Account status set to Deactivated; all active sessions of that account are invalidated immediately; Admin sees a confirmation. |
+| SR-11 | Deactivated user attempts to log in or uses a previously issued session. | Account status is Deactivated. | Login or request rejected; no protected data returned; no new session created. |
+| SR-12 | Unauthenticated user, or user with an expired or invalid session, requests a protected function. | Authentication check fails. | Request rejected; user is directed to log in; no protected data returned. |
+| SR-13 | Request is received whose role or session data is missing, malformed, or inconsistent with the stored account. | Session/role verification fails. | Request denied with "Access Denied/Unauthorized"; the attempt is logged. |
 
 ### 5.6.3 Functional Requirements
-- REQ-RBAC-1:
-- REQ-RBAC-2:
+
+**Role model**
+- **REQ-RBAC-001:** The system shall support exactly three roles: Admin, Teacher and Student.
+- **REQ-RBAC-002:** The system shall associate every account with exactly one role at all times.
+- **REQ-RBAC-003:** The system shall deny any function or record access that is not explicitly permitted to the requesting user's role.
+
+**Backend enforcement and session**
+- **REQ-RBAC-004:** The backend shall verify that the request comes from an authenticated user and shall verify that the user's role is authorized for the requested function and record before processing every protected request.
+- **REQ-RBAC-005:** The backend shall perform these checks regardless of any frontend check, and a request that the frontend would have hidden or disabled shall still be denied by the backend if unauthorized.
+- **REQ-RBAC-006:** The frontend shall display only the functions permitted to the logged-in user's role, and shall not present functions of other roles as available.
+- **REQ-RBAC-007:** The system shall associate the authenticated user's role with the user's authenticated session and shall check it on each protected request.
+- **REQ-RBAC-008:** The system shall not accept a role, user identity or record-ownership claim supplied by the client in a request as a substitute for the role and identity held by the system.
+- **REQ-RBAC-009:** The system shall deny a protected request whose session is missing, expired, invalid, or whose role data is malformed or inconsistent with the stored account.
+- **REQ-RBAC-010:** The system shall reject a protected request from an unauthenticated user and direct the user to log in, without returning any protected data.
+
+**Admin permissions**
+- **REQ-RBAC-011:** The system shall allow a user with the Admin role to create, update and deactivate Student and Teacher accounts.
+- **REQ-RBAC-012:** The system shall allow a user with the Admin role to assign and change the role of an account.
+- **REQ-RBAC-013:** The system shall allow a user with the Admin role to view and manage the records of all students.
+- **REQ-RBAC-014:** The system shall allow a user with the Admin role to manage attendance and grades of all students, subject to the rules in Sections 5.3 and 5.4.
+- **REQ-RBAC-015:** The system shall allow a user with the Admin role to view the records of all Teachers and Students.
+
+**Teacher permissions**
+- **REQ-RBAC-016:** The system shall allow a user with the Teacher role to view the list of students assigned to that Teacher.
+- **REQ-RBAC-017:** The system shall allow a user with the Teacher role to mark and edit attendance only for students assigned to that Teacher, subject to the rules in Section 5.3.
+- **REQ-RBAC-018:** The system shall allow a user with the Teacher role to enter and edit grades only for students assigned to that Teacher, subject to the rules in Section 5.4.
+- **REQ-RBAC-019:** The system shall allow a user with the Teacher role to view the relevant academic records only of students assigned to that Teacher.
+- **REQ-RBAC-020:** The system shall deny a Teacher any read or write access to records of a student who is not assigned to that Teacher.
+- **REQ-RBAC-021:** The system shall deny a Teacher the creation, update and deactivation of accounts and the assignment or change of roles.
+- **REQ-RBAC-022:** The system shall determine a Teacher's assigned students on each request from the current assignment, so that a change in assignment takes effect on the next request. The assignment mechanism is TBD.
+
+**Student permissions**
+- **REQ-RBAC-023:** The system shall allow a user with the Student role to view their own profile, attendance, grades and academic records.
+- **REQ-RBAC-024:** The system shall deny a Student any read or write access to another student's records.
+- **REQ-RBAC-025:** The system shall deny a Student any modification of their own grades and attendance.
+- **REQ-RBAC-026:** The system shall deny a Student the creation, update and deactivation of accounts, the assignment or change of roles, and access to any Teacher or Admin function.
+
+**Unauthorized access handling**
+- **REQ-RBAC-027:** When a request is denied for lack of authorization, the system shall return a clear "Access Denied/Unauthorized" message, shall process no part of the request, and shall leave all data unchanged.
+- **REQ-RBAC-028:** The denial message shall not reveal whether the requested record exists, and shall not contain any data from that record.
+- **REQ-RBAC-029:** The system shall give the same denial response for a record that does not exist and for a record the user is not authorized to access.
+- **REQ-RBAC-030:** When an authorization check cannot be completed because of an internal error, the system shall deny the request and display a generic error message without exposing internal details.
+
+**Role assignment and change**
+- **REQ-RBAC-031:** The system shall allow only a user with the Admin role to assign or change the role of an account.
+- **REQ-RBAC-032:** The system shall accept only Admin, Teacher or Student as the new role in a role change, and shall reject any other value without changing the account.
+- **REQ-RBAC-033:** The system shall apply a role change immediately, so that every protected request received after the change is authorized against the new role, including requests from the user's existing sessions.
+- **REQ-RBAC-034:** The system shall keep exactly one role on the account when a role change is applied, with no period in which the account has no role or two roles.
+- **REQ-RBAC-035:** The system shall record each role change, including the affected account, previous role, new role, the Admin who made the change, and the time of change.
+- **REQ-RBAC-036:** The system shall reject a role-change request for an account that does not exist and display an error message.
+- **REQ-RBAC-037:** The handling of records and Teacher assignments that belong to an account whose role is changed (for example Student to Teacher) is TBD.
+
+**Deactivated accounts**
+- **REQ-RBAC-038:** The system shall allow only a user with the Admin role to deactivate an account.
+- **REQ-RBAC-039:** When an account is deactivated, the system shall invalidate all active sessions of that account immediately.
+- **REQ-RBAC-040:** The system shall reject login attempts by a deactivated account and shall not create a session for it.
+- **REQ-RBAC-041:** The system shall deny every protected request made with a session that belongs to a deactivated account.
+- **REQ-RBAC-042:** The system shall reject an Admin's request to deactivate an account that is already deactivated or that does not exist, and display an error message. Whether an Admin may deactivate their own account or the last remaining Admin account is TBD.
+
+**Audit logging**
+- **REQ-RBAC-043:** The system shall log every denied protected request, recording at least the time, the user's identity and role if known, the requested function or record, and the outcome (denied).
+- **REQ-RBAC-044:** The system shall log failed authentication and session-validation rejections on protected requests.
+- **REQ-RBAC-045:** The system shall not allow any role to modify or delete audit log entries through application functions.
+- **REQ-RBAC-046:** The system shall not record passwords, password hashes or session secrets in the audit log.
+- **REQ-RBAC-047:** Audit-log retention period and which roles may view the log are TBD and defined in Section 6.3.
