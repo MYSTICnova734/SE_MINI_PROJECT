@@ -10,111 +10,64 @@ Prefixes: ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), 
 
 ### 5.1.1 Description and Priority
 
-**Description.** Onboarding is how user accounts are created in the Student Record System. An authenticated Admin creates Student and Teacher accounts and assigns each account a role. Self-registration is out of scope. The Admin never sets or knows the user's password. After the account is created, the user sets their own password through a secure initial-password setup process, then logs in separately using their registered email address and password.
+**Description.** Onboarding is how user accounts are created in the Student Record System. An authenticated Admin creates Student and Teacher accounts and assigns each account a role. Self-registration is out of scope. The Admin never sets or knows the user's password. The user sets their own password through a secure initial-password setup, then logs in separately using their registered email address and password.
 
-**Priority:** High. Every other feature (edit records, attendance, grades, retrieval, role-based access) needs an existing, authenticated account, so none of them can be used without onboarding.
-
-**Actors.**
-- Admin (primary): creates accounts.
-- Student and Teacher (secondary): complete initial-password setup.
+**Priority:** High. Every other feature needs an existing, authenticated account.
 
 **Preconditions.**
 - A pre-seeded Admin account exists (created during initial system setup).
-- The Admin performing onboarding is authenticated and holds the Admin role.
+- The Admin performing onboarding is authenticated.
 
 **Inputs.**
 
-| Account type | Identifier (unique) | Other required fields | Optional fields |
-|---|---|---|---|
-| Student | SRN | Name, email, academic/program details (TBD – Appendix B) | TBD – Appendix B |
-| Teacher | Staff ID | Name, email, department details (TBD – Appendix B) | TBD – Appendix B |
-| Admin (pre-seeded only) | Admin ID | Name, email, password | TBD – Appendix B |
+| Account type | Unique identifier | Other required fields |
+|---|---|---|
+| Student | SRN | Name, email, academic/program details |
+| Teacher | Staff ID | Name, email, department details |
+| Admin (pre-seeded only) | Admin ID | Name, email, password |
 
-The Admin also selects the role of the account being created (Student or Teacher). The user's password is entered by the user during initial-password setup, never by the Admin. Field lengths, data types and the final field list are defined in Appendix B.
-
-**Data created on successful onboarding.** The account record holds:
-- the unique identifier (SRN, Staff ID or Admin ID);
-- name, email, role and role-specific details;
-- account status (Active);
-- the password state (not yet set, then set);
-- the password hash once the password is set, and never the plaintext;
-- the creation timestamp and the identity of the Admin who created the account.
+The Admin also selects the role (Student or Teacher). Field lengths, data types and the final field list are defined in Appendix B.
 
 **Assumptions and dependencies.**
-- Role permissions after onboarding are defined and enforced in Section 5.6. Onboarding only records the assigned role.
-- Password hashing algorithm, session handling, setup-credential validity period and transport protection are defined in Section 6.3.
-- The setup-credential delivery mechanism is TBD (see Section 3.3 and Section 6.3).
+- What each role may do after onboarding is defined in Section 5.6.
+- The hashing algorithm, session handling, setup-credential validity period and delivery mechanism are defined in Section 6.3 (TBD).
 - Email verification is out of scope.
-- Because login uses email, email addresses must be unique across all accounts.
-- Identifier and email comparisons ignore letter case and leading/trailing whitespace (conservative assumption).
-- Whether additional Admin accounts can be created through onboarding is TBD. In this version, the only Admin account is the pre-seeded one.
+- Identifier and email comparisons ignore letter case and leading/trailing whitespace.
 
 ### 5.1.2 Stimulus/Response Sequences
 
 | # | Stimulus (trigger) | System validation | System response |
 |---|---|---|---|
-| SR-1 | Admin selects "create account", chooses a role and submits valid, unique data. | Admin authenticated and has Admin role; required fields present and valid; identifier and email not already in use. | Account is created with status Active; password setup is initiated for the user; Admin sees a confirmation. No session is created for the new user. |
-| SR-2 | Admin submits with a required field missing, blank, or in an invalid format or length. | Field-level validation fails. | No account created; each failing field is identified in an error message; previously entered non-password values are retained. |
-| SR-3 | Admin submits an SRN, Staff ID, Admin ID or email that already belongs to an existing account. | Uniqueness check finds a match. | Request rejected; no account created or changed; error message names the duplicated field without disclosing other data of the existing account. |
-| SR-4 | A non-Admin or unauthenticated user attempts to open or submit the onboarding function. | Authentication and role check fails. | Access denied; no account created. |
-| SR-5 | New user opens the initial-password setup and submits a password and confirmation that satisfy the password rules. | Setup credential valid, unused and unexpired; passwords match; password rules satisfied. | Password is hashed and stored; setup credential is invalidated; user is informed and directed to log in separately. No session is created. |
-| SR-6 | New user submits a password that violates the rules or does not match the confirmation. | Password rules or match check fails. | Password not stored; error message states which rule was not met; setup remains available while the credential is valid. |
-| SR-7 | User opens a used, expired or invalid setup credential. | Credential check fails. | Setup rejected; no password set; user is informed that the setup link/credential is not valid. |
-| SR-8 | User attempts to log in with email and password before completing initial-password setup. | No password has been set for the account. | Login rejected with a generic authentication-failure message. |
+| SR-1 | Admin submits a valid account-creation request with a unique identifier and email. | Admin authenticated; required fields valid; identifier and email unique. | Account created as Active; password setup initiated; Admin sees a confirmation. No session is created for the new user. |
+| SR-2 | Admin submits a request with a missing or invalid field. | Field validation fails. | No account created; every failing field is identified; entered non-password values are retained. |
+| SR-3 | Admin submits an SRN, Staff ID, Admin ID or email already in use. | Uniqueness check finds a match. | Request rejected; existing account unchanged; error names the duplicated field. |
+| SR-4 | A non-Admin or unauthenticated user attempts account creation. | Authentication/role check fails. | Access denied; no account created. |
+| SR-5 | New user submits a valid password and matching confirmation using a valid setup credential. | Credential valid, unused, unexpired; password rules met. | Password hashed and stored; credential invalidated; user directed to log in separately. |
+| SR-6 | New user submits a password that breaks the rules, does not match, or uses an invalid/expired credential. | Password or credential check fails. | Nothing stored; message states what failed. |
+| SR-7 | User tries to log in before setting a password. | No password set for the account. | Login rejected with a generic authentication-failure message. |
 
 ### 5.1.3 Functional Requirements
 
-**Access and preconditions**
-- **REQ-ONB-001:** The system shall allow only an authenticated user with the Admin role to use the account-creation (onboarding) function.
-- **REQ-ONB-002:** The system shall reject any account-creation attempt by an unauthenticated user or by a user whose role is not Admin, shall create no account, and shall display an access-denied message.
-- **REQ-ONB-003:** The system shall not provide any self-registration function; no account shall be creatable without an authenticated Admin.
-- **REQ-ONB-004:** The system shall provide a pre-seeded Admin account, created during initial system setup, that holds an Admin ID, name, email and password, so that an Admin can log in before any other account exists. The handling of the seeded Admin's initial credential is specified in Section 6.3.
-
-**Inputs and validation**
-- **REQ-ONB-005:** The system shall require the Admin to select exactly one role (Student or Teacher) before submitting an account-creation request.
-- **REQ-ONB-006:** For a Student account, the system shall require SRN, name, email and academic/program details (fields as defined in Appendix B).
-- **REQ-ONB-007:** For a Teacher account, the system shall require Staff ID, name, email and department details (fields as defined in Appendix B).
-- **REQ-ONB-008:** The system shall not require or accept a password from the Admin when creating a Student or Teacher account.
-- **REQ-ONB-009:** The system shall remove leading and trailing whitespace from text inputs before validation and storage.
-- **REQ-ONB-010:** The system shall treat a required field that is missing, empty, or contains only whitespace as invalid.
-- **REQ-ONB-011:** The system shall accept an email address only if it contains exactly one "@" separating a non-empty local part from a non-empty domain part that contains at least one ".".
-- **REQ-ONB-012:** The system shall reject any field value whose length or data type violates the limits defined in Appendix B.
-- **REQ-ONB-013:** When validation fails, the system shall create no account and shall display an error message identifying every invalid or missing field.
-- **REQ-ONB-014:** When validation fails, the system shall retain the previously entered non-password values in the form so that the Admin does not need to re-enter them.
-
-**Uniqueness and duplicate handling**
-- **REQ-ONB-015:** The system shall ensure that no two accounts share the same identifier value (SRN, Staff ID or Admin ID).
-- **REQ-ONB-016:** The system shall ensure that no two accounts share the same email address.
-- **REQ-ONB-017:** The system shall perform uniqueness comparisons of identifiers and email addresses without regard to letter case and after whitespace trimming.
-- **REQ-ONB-018:** If a submitted identifier or email duplicates an existing account, the system shall reject the request, create no account, leave the existing account unchanged, and display an error message naming the duplicated field.
-- **REQ-ONB-019:** The duplicate-error message shall not disclose any data of the existing account other than the fact that the submitted value is already in use.
-- **REQ-ONB-020:** The system shall ensure that two simultaneous account-creation requests with the same identifier or email cannot both succeed.
-
-**Role assignment and account status**
-- **REQ-ONB-021:** The system shall assign to the new account exactly the role selected by the Admin and shall store that role with the account.
-- **REQ-ONB-022:** The system shall set the status of a successfully created account to Active, with no additional approval step.
-- **REQ-ONB-023:** The system shall record the creation timestamp and the identity of the creating Admin with each new account.
-
-**Initial-password setup**
-- **REQ-ONB-024:** Upon successful account creation, the system shall initiate a secure initial-password setup for the new user, through which the user sets their own password.
-- **REQ-ONB-025:** The system shall not reveal the user's password to the Admin or to any other user at any point, including during creation and setup.
-- **REQ-ONB-026:** The system shall issue the initial-password setup credential as single-use, bound to the specific account, and valid only for a limited period (period TBD – Section 6.3). The delivery mechanism of this credential is TBD (Section 3.3 and Section 6.3).
-- **REQ-ONB-027:** The system shall require the user to enter the new password twice during setup and shall reject the submission if the two entries do not match.
-- **REQ-ONB-028:** The system shall accept a password only if it has at least 8 characters and contains at least one uppercase letter, one lowercase letter, one digit, and one special character (a character that is neither a letter nor a digit).
-- **REQ-ONB-029:** If a submitted password violates REQ-ONB-027 or REQ-ONB-028, the system shall not store it and shall display a message stating which rule was not met.
-- **REQ-ONB-030:** The system shall store the password only as a salted, adaptive, one-way hash, using a unique salt per password. The specific algorithm is defined in Section 6.3.
-- **REQ-ONB-031:** The system shall not store, log, display, or transmit a user's password in plaintext after it has been submitted.
-- **REQ-ONB-032:** The system shall reject a setup credential that is used, expired, or invalid, shall set no password, and shall inform the user that the credential is not valid. The mechanism for re-issuing a credential is TBD.
-- **REQ-ONB-033:** Upon successful password setup, the system shall immediately invalidate the setup credential.
-
-**Completion, login implications and errors**
-- **REQ-ONB-034:** Upon successful account creation, the system shall display to the Admin a confirmation showing the new account's identifier, name and role, and shall not display any password, password hash, or setup credential.
-- **REQ-ONB-035:** The system shall not create an authenticated session for the new user as a result of account creation or password setup, and shall instead direct the user to log in separately.
-- **REQ-ONB-036:** The system shall store the user's registered email address as their login identifier, so that the user can log in with email and password once the password has been set.
-- **REQ-ONB-037:** The system shall reject any login attempt for an account whose password has not yet been set, using the same generic authentication-failure message used for incorrect credentials.
-- **REQ-ONB-038:** The system shall not require email verification before an account can be used.
-- **REQ-ONB-039:** The system shall create the account record atomically: if any step of account creation fails, no partial account shall remain and the Admin shall be shown an error message.
-- **REQ-ONB-040:** When an unexpected error occurs during onboarding, the system shall display a generic error message that does not expose internal details (such as stack traces or storage errors).
+- **REQ-ONB-001:** The system shall allow only an authenticated Admin to create accounts, and shall reject any other attempt with an access-denied message and no account created.
+- **REQ-ONB-002:** The system shall provide no self-registration function, and shall provide a pre-seeded Admin account created during initial system setup (handling of its initial credential is specified in Section 6.3).
+- **REQ-ONB-003:** The system shall require the Admin to select exactly one role (Student or Teacher) for each new account, and shall store the selected role with the account.
+- **REQ-ONB-004:** For a Student account, the system shall require SRN, name, email and academic/program details (as defined in Appendix B).
+- **REQ-ONB-005:** For a Teacher account, the system shall require Staff ID, name, email and department details (as defined in Appendix B).
+- **REQ-ONB-006:** The system shall neither require nor accept a password from the Admin when creating a Student or Teacher account.
+- **REQ-ONB-007:** The system shall trim leading and trailing whitespace from text inputs, and shall reject a request in which a required field is missing or blank, an email is not in a valid format (one "@" with non-empty parts and a "." in the domain), or any value violates the limits in Appendix B.
+- **REQ-ONB-008:** When validation fails, the system shall create no account, shall display an error message identifying every invalid or missing field, and shall retain the entered non-password values.
+- **REQ-ONB-009:** The system shall ensure that no two accounts share the same SRN, Staff ID, Admin ID or email address (compared without regard to letter case), including when two requests are submitted simultaneously.
+- **REQ-ONB-010:** When a submitted identifier or email duplicates an existing account, the system shall reject the request, leave the existing account unchanged, and display an error message that names the duplicated field and discloses no other data of the existing account.
+- **REQ-ONB-011:** The system shall set a successfully created account to Active with no approval step, and shall record the creation time and the creating Admin.
+- **REQ-ONB-012:** Upon successful account creation, the system shall initiate a secure initial-password setup through which the user sets their own password, and shall never reveal that password to the Admin or any other user.
+- **REQ-ONB-013:** The system shall issue the setup credential as single-use, bound to one account and valid for a limited period (period and delivery mechanism TBD in Section 6.3).
+- **REQ-ONB-014:** The system shall reject a setup credential that is used, expired or invalid, shall set no password, and shall inform the user that the credential is not valid.
+- **REQ-ONB-015:** The system shall require the password to be entered twice with matching entries, to have at least 8 characters, and to contain at least one uppercase letter, one lowercase letter, one digit and one special character; otherwise it shall not store the password and shall state which rule was not met.
+- **REQ-ONB-016:** The system shall store a password only as a salted, adaptive, one-way hash (algorithm defined in Section 6.3), and shall not store, log or display it in plaintext.
+- **REQ-ONB-017:** Upon successful password setup, the system shall invalidate the setup credential, shall create no authenticated session, and shall direct the user to log in separately.
+- **REQ-ONB-018:** The system shall use the registered email address as the login identifier, and shall reject login for an account whose password is not yet set with the same generic message used for incorrect credentials.
+- **REQ-ONB-019:** Upon successful account creation, the system shall show the Admin a confirmation containing the new account's identifier, name and role, and no password, hash or setup credential.
+- **REQ-ONB-020:** The system shall create an account atomically, leaving no partial account if any step fails, and shall show a generic error message that exposes no internal details when an unexpected error occurs.
 
 ## 5.2 Edit Records
 
@@ -170,112 +123,59 @@ TODO
 
 ### 5.6.1 Description and Priority
 
-**Description.** Role-Based Access Control (RBAC) decides which functions and records each authenticated user may use in the Student Record System. Access is strictly role-based. Every account has exactly one role: Admin, Teacher or Student. A role is assigned when the account is created (see Section 5.1), and only an Admin can change it afterwards. Permissions are enforced in both the frontend and the backend, and the backend is the authoritative enforcement layer. The frontend only hides or disables functions to help the user. Any action or record not explicitly permitted to a role is denied (deny by default).
+**Description.** Role-Based Access Control (RBAC) decides which functions and records each authenticated user may use. Every account has exactly one role: Admin, Teacher or Student. The role is assigned at account creation (Section 5.1), and only an Admin can change it. Permissions are enforced in both the frontend and the backend, and the backend is the authoritative enforcement layer. Anything not explicitly permitted to a role is denied. Authentication (Section 5.1 and Section 6.3) establishes who the user is, and authorization (this section) decides what that user may do.
 
-**Priority:** High. Every feature that reads or modifies student data (Sections 5.2 to 5.5) depends on correct authorization. A failure here would expose or corrupt student records.
-
-**Authentication vs. authorization.** Authentication (Section 5.1 and Section 6.3) establishes who the user is. Authorization (this section) decides what that user is allowed to do. A valid login does not by itself grant access to any function or record.
+**Priority:** High. Features 5.2 to 5.5 read and modify student data and depend on correct authorization.
 
 **Roles and permissions.**
 
-| Role | Permitted | Scope boundary | Explicitly not permitted |
+| Role | Permitted | Scope boundary | Not permitted |
 |---|---|---|---|
-| Admin | Create, update and deactivate Student and Teacher accounts; assign and change roles; view and manage student records; manage attendance; manage grades; view all student and teacher records | All relevant records | None defined in this version |
-| Teacher | View assigned students; mark and edit attendance for assigned students; enter and edit grades for assigned students; view relevant academic records of assigned students | Only students assigned to that Teacher | Accessing students outside the assignment; managing accounts or roles |
-| Student | View own profile, attendance, grades and academic records | Only own records | Accessing or modifying other students' records; modifying own grades or attendance |
-
-**Preconditions.**
-- The user holds an account with an assigned role.
-- For protected functions, the user has an authenticated session.
+| Admin | Create, update, deactivate Student and Teacher accounts; assign and change roles; view and manage student records, attendance and grades; view all Teacher and Student records | All relevant records | None defined in this version |
+| Teacher | View assigned students; mark and edit attendance and enter and edit grades for assigned students; view academic records of assigned students | Assigned students only | Students outside the assignment; account and role management |
+| Student | View own profile, attendance, grades and academic records | Own records only | Other students' records; modifying own grades or attendance |
 
 **Assumptions and dependencies.**
-- Account creation and initial credentials are specified in Section 5.1. This section covers only the role and account-status aspects that access control depends on.
-- Attendance rules (for example the edit window) are defined in Section 5.3, and grading rules (for example the rubric) in Section 5.4. RBAC decides whether a role may attempt an action, and those sections decide whether the action's own rules allow it.
-- Session/token mechanism, audit-log retention and audit-log access are defined in Section 6.3.
-- The way a Teacher is assigned to a Student (who performs it and how it is stored) is not yet decided and is marked TBD in this version. RBAC only needs the assignment relationship to exist.
-- Whether the Admin role can be assigned to an existing account through role change is TBD. Section 5.1 creates only Student and Teacher accounts (plus the pre-seeded Admin).
+- Attendance rules (Section 5.3) and grading rules (Section 5.4) apply in addition to RBAC.
+- Session/token mechanism, audit-log retention and who may view the audit log are defined in Section 6.3 (TBD).
+- How a Teacher is assigned to a Student is TBD. RBAC only requires that the assignment exists.
+- TBD in this version: whether an Admin may deactivate their own or the last remaining Admin account, and how records and assignments are handled when an account's role changes.
 
 ### 5.6.2 Stimulus/Response Sequences
 
 | # | Stimulus (trigger) | System validation | System response |
 |---|---|---|---|
-| SR-1 | Admin requests an Admin-permitted function (e.g. view any student's record, edit grades, deactivate an account). | Session valid; account Active; role is Admin; function permitted for Admin. | Request is processed and the result is shown. |
-| SR-2 | Teacher requests to view, mark attendance for, or enter grades for a student assigned to them. | Session valid; account Active; role is Teacher; target student is assigned to this Teacher. | Request is processed, subject to the rules in Sections 5.3 and 5.4. |
-| SR-3 | Teacher requests a record of a student not assigned to them. | Session valid; role is Teacher; target student is not assigned to this Teacher. | Request denied with "Access Denied/Unauthorized"; no data of the student is returned; the attempt is logged. |
-| SR-4 | Student requests their own profile, attendance, grades or academic records. | Session valid; account Active; role is Student; target record belongs to this Student. | Requested record is displayed read-only. |
-| SR-5 | Student requests another student's record. | Session valid; role is Student; target record does not belong to this Student. | Request denied with "Access Denied/Unauthorized"; no data returned; the attempt is logged. |
-| SR-6 | Student attempts to modify their own grades or attendance. | Session valid; role is Student; modification is not permitted for Student. | Request denied with "Access Denied/Unauthorized"; data unchanged; the attempt is logged. |
-| SR-7 | Any user requests a function not permitted for their role (e.g. Teacher tries to change a role; Student tries to create an account). | Session valid; function not in the permission set of the user's role. | Request denied with "Access Denied/Unauthorized"; no change made; the attempt is logged. |
-| SR-8 | Admin changes a user's role. | Requester is Admin; target account exists; new role is a valid role. | Role is updated and takes effect immediately for all subsequent requests; change is recorded; Admin sees a confirmation. |
-| SR-9 | Non-Admin attempts to assign or change a role. | Requester's role is not Admin. | Request denied with "Access Denied/Unauthorized"; role unchanged; the attempt is logged. |
-| SR-10 | Admin deactivates an account. | Requester is Admin; target account exists and is Active. | Account status set to Deactivated; all active sessions of that account are invalidated immediately; Admin sees a confirmation. |
-| SR-11 | Deactivated user attempts to log in or uses a previously issued session. | Account status is Deactivated. | Login or request rejected; no protected data returned; no new session created. |
-| SR-12 | Unauthenticated user, or user with an expired or invalid session, requests a protected function. | Authentication check fails. | Request rejected; user is directed to log in; no protected data returned. |
-| SR-13 | Request is received whose role or session data is missing, malformed, or inconsistent with the stored account. | Session/role verification fails. | Request denied with "Access Denied/Unauthorized"; the attempt is logged. |
+| SR-1 | Admin requests an Admin-permitted function (e.g. view any record, edit grades, deactivate an account). | Session valid; account Active; role is Admin. | Request processed and result shown. |
+| SR-2 | Teacher requests an assigned student's record or attendance/grade function. | Session valid; role is Teacher; student is assigned to this Teacher. | Request processed, subject to Sections 5.3 and 5.4. |
+| SR-3 | Teacher requests a student who is not assigned to them. | Student not in this Teacher's assignment. | "Access Denied/Unauthorized"; no data returned; attempt logged. |
+| SR-4 | Student requests their own profile, attendance, grades or academic records. | Session valid; role is Student; record belongs to this Student. | Record displayed read-only. |
+| SR-5 | Student requests another student's record, or tries to modify their own grades or attendance. | Record not owned, or modification not permitted for Student. | "Access Denied/Unauthorized"; data unchanged; attempt logged. |
+| SR-6 | Any user requests a function not permitted for their role (e.g. Teacher changes a role). | Function not in the role's permission set. | "Access Denied/Unauthorized"; no change; attempt logged. |
+| SR-7 | Admin changes a user's role. | Requester is Admin; account exists; new role is valid. | Role updated and effective immediately; change recorded; confirmation shown. |
+| SR-8 | Deactivated user tries to log in or uses an existing session. | Account status is Deactivated. | Request rejected; no data returned; no new session created. |
+| SR-9 | Unauthenticated user, or user with an expired/invalid session, requests a protected function. | Authentication check fails. | Request rejected; user directed to log in; no data returned. |
 
 ### 5.6.3 Functional Requirements
 
-**Role model**
-- **REQ-RBAC-001:** The system shall support exactly three roles: Admin, Teacher and Student.
-- **REQ-RBAC-002:** The system shall associate every account with exactly one role at all times.
-- **REQ-RBAC-003:** The system shall deny any function or record access that is not explicitly permitted to the requesting user's role.
-
-**Backend enforcement and session**
-- **REQ-RBAC-004:** The backend shall verify that the request comes from an authenticated user and shall verify that the user's role is authorized for the requested function and record before processing every protected request.
-- **REQ-RBAC-005:** The backend shall perform these checks regardless of any frontend check, and a request that the frontend would have hidden or disabled shall still be denied by the backend if unauthorized.
-- **REQ-RBAC-006:** The frontend shall display only the functions permitted to the logged-in user's role, and shall not present functions of other roles as available.
-- **REQ-RBAC-007:** The system shall associate the authenticated user's role with the user's authenticated session and shall check it on each protected request.
-- **REQ-RBAC-008:** The system shall not accept a role, user identity or record-ownership claim supplied by the client in a request as a substitute for the role and identity held by the system.
-- **REQ-RBAC-009:** The system shall deny a protected request whose session is missing, expired, invalid, or whose role data is malformed or inconsistent with the stored account.
-- **REQ-RBAC-010:** The system shall reject a protected request from an unauthenticated user and direct the user to log in, without returning any protected data.
-
-**Admin permissions**
-- **REQ-RBAC-011:** The system shall allow a user with the Admin role to create, update and deactivate Student and Teacher accounts.
-- **REQ-RBAC-012:** The system shall allow a user with the Admin role to assign and change the role of an account.
-- **REQ-RBAC-013:** The system shall allow a user with the Admin role to view and manage the records of all students.
-- **REQ-RBAC-014:** The system shall allow a user with the Admin role to manage attendance and grades of all students, subject to the rules in Sections 5.3 and 5.4.
-- **REQ-RBAC-015:** The system shall allow a user with the Admin role to view the records of all Teachers and Students.
-
-**Teacher permissions**
-- **REQ-RBAC-016:** The system shall allow a user with the Teacher role to view the list of students assigned to that Teacher.
-- **REQ-RBAC-017:** The system shall allow a user with the Teacher role to mark and edit attendance only for students assigned to that Teacher, subject to the rules in Section 5.3.
-- **REQ-RBAC-018:** The system shall allow a user with the Teacher role to enter and edit grades only for students assigned to that Teacher, subject to the rules in Section 5.4.
-- **REQ-RBAC-019:** The system shall allow a user with the Teacher role to view the relevant academic records only of students assigned to that Teacher.
-- **REQ-RBAC-020:** The system shall deny a Teacher any read or write access to records of a student who is not assigned to that Teacher.
-- **REQ-RBAC-021:** The system shall deny a Teacher the creation, update and deactivation of accounts and the assignment or change of roles.
-- **REQ-RBAC-022:** The system shall determine a Teacher's assigned students on each request from the current assignment, so that a change in assignment takes effect on the next request. The assignment mechanism is TBD.
-
-**Student permissions**
-- **REQ-RBAC-023:** The system shall allow a user with the Student role to view their own profile, attendance, grades and academic records.
-- **REQ-RBAC-024:** The system shall deny a Student any read or write access to another student's records.
-- **REQ-RBAC-025:** The system shall deny a Student any modification of their own grades and attendance.
-- **REQ-RBAC-026:** The system shall deny a Student the creation, update and deactivation of accounts, the assignment or change of roles, and access to any Teacher or Admin function.
-
-**Unauthorized access handling**
-- **REQ-RBAC-027:** When a request is denied for lack of authorization, the system shall return a clear "Access Denied/Unauthorized" message, shall process no part of the request, and shall leave all data unchanged.
-- **REQ-RBAC-028:** The denial message shall not reveal whether the requested record exists, and shall not contain any data from that record.
-- **REQ-RBAC-029:** The system shall give the same denial response for a record that does not exist and for a record the user is not authorized to access.
-- **REQ-RBAC-030:** When an authorization check cannot be completed because of an internal error, the system shall deny the request and display a generic error message without exposing internal details.
-
-**Role assignment and change**
-- **REQ-RBAC-031:** The system shall allow only a user with the Admin role to assign or change the role of an account.
-- **REQ-RBAC-032:** The system shall accept only Admin, Teacher or Student as the new role in a role change, and shall reject any other value without changing the account.
-- **REQ-RBAC-033:** The system shall apply a role change immediately, so that every protected request received after the change is authorized against the new role, including requests from the user's existing sessions.
-- **REQ-RBAC-034:** The system shall keep exactly one role on the account when a role change is applied, with no period in which the account has no role or two roles.
-- **REQ-RBAC-035:** The system shall record each role change, including the affected account, previous role, new role, the Admin who made the change, and the time of change.
-- **REQ-RBAC-036:** The system shall reject a role-change request for an account that does not exist and display an error message.
-- **REQ-RBAC-037:** The handling of records and Teacher assignments that belong to an account whose role is changed (for example Student to Teacher) is TBD.
-
-**Deactivated accounts**
-- **REQ-RBAC-038:** The system shall allow only a user with the Admin role to deactivate an account.
-- **REQ-RBAC-039:** When an account is deactivated, the system shall invalidate all active sessions of that account immediately.
-- **REQ-RBAC-040:** The system shall reject login attempts by a deactivated account and shall not create a session for it.
-- **REQ-RBAC-041:** The system shall deny every protected request made with a session that belongs to a deactivated account.
-- **REQ-RBAC-042:** The system shall reject an Admin's request to deactivate an account that is already deactivated or that does not exist, and display an error message. Whether an Admin may deactivate their own account or the last remaining Admin account is TBD.
-
-**Audit logging**
-- **REQ-RBAC-043:** The system shall log every denied protected request, recording at least the time, the user's identity and role if known, the requested function or record, and the outcome (denied).
-- **REQ-RBAC-044:** The system shall log failed authentication and session-validation rejections on protected requests.
-- **REQ-RBAC-045:** The system shall not allow any role to modify or delete audit log entries through application functions.
+- **REQ-RBAC-001:** The system shall support exactly three roles (Admin, Teacher and Student) and shall associate every account with exactly one role at all times.
+- **REQ-RBAC-002:** The system shall deny any function or record access that is not explicitly permitted to the requesting user's role.
+- **REQ-RBAC-003:** The backend shall verify authentication and authorization (role and record scope) on every protected request before processing it, regardless of any frontend check.
+- **REQ-RBAC-004:** The frontend shall display only the functions permitted to the logged-in user's role.
+- **REQ-RBAC-005:** The system shall associate the authenticated user's role with the authenticated session, check it on every protected request, and not accept a client-supplied role, identity or ownership claim in its place.
+- **REQ-RBAC-006:** The system shall deny a protected request whose session is missing, expired, invalid or inconsistent with the stored account, and for an unauthenticated user shall direct the user to log in without returning protected data.
+- **REQ-RBAC-007:** The system shall allow an Admin to create, update and deactivate Student and Teacher accounts, and to assign and change roles.
+- **REQ-RBAC-008:** The system shall allow an Admin to view and manage the records, attendance and grades of all students (subject to Sections 5.3 and 5.4) and to view all Teacher records.
+- **REQ-RBAC-009:** The system shall allow a Teacher to view the list of students assigned to them, to mark and edit attendance and enter and edit grades for those students (subject to Sections 5.3 and 5.4), and to view those students' relevant academic records.
+- **REQ-RBAC-010:** The system shall deny a Teacher any read or write access to a student who is not assigned to that Teacher, and shall evaluate the assignment on every request so a change takes effect on the next request (assignment mechanism TBD).
+- **REQ-RBAC-011:** The system shall deny a Teacher the creation, update and deactivation of accounts and the assignment or change of roles.
+- **REQ-RBAC-012:** The system shall allow a Student to view their own profile, attendance, grades and academic records.
+- **REQ-RBAC-013:** The system shall deny a Student any access to another student's records, any modification of their own grades or attendance, and any Teacher or Admin function.
+- **REQ-RBAC-014:** When a request is denied for lack of authorization, the system shall return a clear "Access Denied/Unauthorized" message, process no part of the request, leave data unchanged, and give the same response for a nonexistent record as for an unauthorized one.
+- **REQ-RBAC-015:** When an authorization check cannot be completed because of an internal error, the system shall deny the request and show a generic error message that exposes no internal details.
+- **REQ-RBAC-016:** The system shall allow only an Admin to assign or change a role, shall accept only Admin, Teacher or Student as the new role, and shall reject a role change for a nonexistent account with an error message.
+- **REQ-RBAC-017:** The system shall apply a role change immediately, so that every later protected request (including from existing sessions) is authorized against the new role, shall keep exactly one role on the account, and shall record the affected account, previous role, new role, Admin and time.
+- **REQ-RBAC-018:** The system shall allow only an Admin to deactivate an account, and shall invalidate all active sessions of that account immediately.
+- **REQ-RBAC-019:** The system shall reject login by a deactivated account without creating a session, and shall deny every protected request made with a session of a deactivated account.
+- **REQ-RBAC-020:** The system shall log every denied protected request and every failed authentication or session validation on a protected request (recording time, user identity and role if known, requested function or record, and outcome), shall not record passwords, hashes or session secrets in the log, and shall allow no role to modify or delete log entries through application functions.
 - **REQ-RBAC-046:** The system shall not record passwords, password hashes or session secrets in the audit log.
 - **REQ-RBAC-047:** Audit-log retention period and which roles may view the log are TBD and defined in Section 6.3.
