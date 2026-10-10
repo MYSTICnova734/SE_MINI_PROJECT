@@ -24,7 +24,8 @@ README.md          <- this file
 
 **Mac**
 ```bash
-brew install pandoc basictex   # then: sudo tlmgr install lmodern
+brew install pandoc basictex
+sudo tlmgr install lmodern
 bash docs/srs/build.sh
 ```
 

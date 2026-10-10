@@ -1,9 +1,9 @@
 # Appendix A: Glossary {.unnumbered}
- 
+
 This glossary defines the terms and abbreviations used in this SRS. Terms are grouped by topic and listed alphabetically within each group. The role names defined in A.1 are used consistently throughout the document.
- 
+
 ## A.1 Users and Roles {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | Administrator | A user responsible for creating accounts, changing roles between Student and Faculty, deactivating and reactivating accounts, maintaining student records, designating the anchor faculty of each course, and amending attendance after the edit window has closed. Administrators can view rubrics and marks but cannot edit rubrics or enter or amend marks. Identified by an Administrator ID. |
@@ -13,9 +13,9 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Role | The category of a user account (Administrator, Faculty or Student), which determines what the user may see and do. |
 | Role-Based Access Control (RBAC) | The mechanism by which the system grants or denies each action according to the user's role and, where relevant, their relationship to a course (for example, being its anchor faculty). |
 | Student | A user enrolled at the institution. A student can view only their own record, attendance and published grades. Identified by an SRN. |
- 
+
 ## A.2 Accounts and Records {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | Account | The login identity of a user, consisting of a registered email address, a role and a password. |
@@ -32,9 +32,9 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Staff ID | The unique identifier of a Faculty member. |
 | Stale Update | An attempt to save changes to a record that has been modified by someone else since the user opened it. The system rejects such updates. |
 | Student Record | The stored details about a student: SRN, name, contact details, programme, section and account status. |
- 
+
 ## A.3 Academic Structure {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | Course | A subject taught at the institution. |
@@ -44,18 +44,18 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Programme | The degree or course of study that a student is following. |
 | Section | A group of students within a programme who attend classes together. |
 | Term | A defined period of teaching, such as a semester. |
- 
+
 ## A.4 Attendance {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | Attendance Record | The record of one student's attendance status for one class session. |
 | Class Session | A single scheduled meeting of a course offering at which attendance can be marked. This is distinct from an authenticated session (A.6). |
 | Edit Window | The limited period after a class session during which a faculty member can correct an attendance entry. After it closes, only an Administrator can amend the entry, and the change is logged. Its length is specified in Section 5.3. |
 | Overlapping Sessions | Class sessions whose times overlap. A student cannot be marked present in two overlapping sessions. |
- 
+
 ## A.5 Grading {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | Amended Grade | A published mark that was changed by the anchor faculty after publication. It is flagged as amended and the reason is recorded in the audit trail. |
@@ -70,9 +70,9 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Rubric Component | One assessed item within a rubric, such as an assignment, internal test or final exam, with a name, a maximum mark and a weight. |
 | Weight | The percentage that a rubric component contributes to the weighted total. The weights of all components in a rubric must add up to 100%. |
 | Weighted Total | A student's overall result for a course offering, calculated as the sum over all components of (mark ÷ maximum mark) × weight. |
- 
+
 ## A.6 Security and Technical Terms {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | API | Application Programming Interface: the set of requests through which the frontend communicates with the backend. |
@@ -86,26 +86,25 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Flask | The Python web framework used to build the backend. |
 | Frontend | The browser-based user interface, built with React. |
 | Hash (Salted Hash) | A one-way transformation of a password into a fixed string, combined with a random value (the salt) so that identical passwords produce different results. Passwords are stored only in this form. |
-| MySQL | The relational database used in production. |
+| MySQL | The relational database used by the system in development, testing and deployment. |
 | ORM | Object-Relational Mapper: a library that lets the backend work with database tables as program objects. |
 | Protected Request | A request for a function or data that requires the user to be authenticated and authorised. |
 | React | The JavaScript library used to build the frontend. |
 | REST API | An API in which the frontend requests data and actions from the backend over HTTP using standard methods. |
 | Self-hosted Deployment | Running the system on servers owned and operated by the institution. This is the deployment model chosen for the system (Appendix D). |
 | Serverless | A cloud model in which code runs as short-lived functions without a continuously running server. Considered and not chosen (Appendix D). |
-| SQLite | A lightweight file-based database used for development and testing. |
- 
+
 ## A.7 Project and Document Terms {.unnumbered}
- 
+
 | Term | Definition |
 |------------|------------------------------------------------|
 | Hypothetical Stakeholder | The fictional institutional representative used in place of a real customer to ground scope and design decisions. See Appendix D. |
 | Requirement ID | The unique tag given to each functional requirement, in the form REQ-XXX-nnn. The prefixes are ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), RET (retrieval) and RBAC (role-based access). |
 | Stimulus/Response Sequence (SR) | A numbered pairing of a user action (stimulus) and the system's behaviour in response, used to describe each feature. |
 | TBD | To be determined: information not yet available at the time of writing. |
- 
+
 ## A.8 Abbreviations {.unnumbered}
- 
+
 | Abbreviation | Expansion |
 |------------|------------------------------------------------|
 | CI/CD | Continuous Integration / Continuous Deployment |
