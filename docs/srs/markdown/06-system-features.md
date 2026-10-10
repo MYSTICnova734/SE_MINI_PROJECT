@@ -7,27 +7,26 @@ Prefixes: ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), 
 -->
 
 ## Onboarding
-
+ 
 ### Description and Priority
-
-**Description.** Onboarding is how user accounts are created in the Student Record System. An authenticated Admin creates Student and Teacher accounts and assigns each account a role. Self-registration is out of scope. The Admin never sets or knows the user's password. The user sets their own password through a secure initial-password setup, then logs in separately using their registered email address and password.
-
+ 
+**Description.** Onboarding is how user accounts are created in the Student Record System. An authenticated Administrator creates Student and Faculty accounts and assigns each account a role. Self-registration is out of scope. The Administrator never sets or knows the user's password. The user sets their own password through a secure initial-password setup, then logs in separately using their registered email address and password.
+ 
 **Priority:** High. Every other feature needs an existing, authenticated account.
-
+ 
 **Preconditions.**
-- A pre-seeded Admin account exists (created during initial system setup).
-- The Admin performing onboarding is authenticated.
-
+- A pre-seeded Administrator account exists (created during initial system setup).
+- The Administrator performing onboarding is authenticated.
 **Inputs.**
-
+ 
 | Account type | Unique identifier | Other required fields |
 |---|---|---|
-| Student | SRN | Name, email, academic/program details |
-| Teacher | Staff ID | Name, email, department details |
-| Admin (pre-seeded only) | Admin ID | Name, email, password |
-
-The Admin also selects the role (Student or Teacher). Field lengths, data types and the final field list are defined in Appendix B.
-
+| Student | SRN | Name, email, academic/programme details |
+| Faculty | Staff ID | Name, email, department details |
+| Administrator (pre-seeded only) | Administrator ID | Name, email, password |
+ 
+The Administrator also selects the role (Student or Faculty). Field lengths, data types and the final field list are defined in Appendix B.
+ 
 **Assumptions and dependencies.**
 - What each role may do after onboarding is defined in Section 5.6.
 - The hashing algorithm, session handling, setup-credential validity period and delivery mechanism are defined in Section 6.3 (TBD).
@@ -35,38 +34,38 @@ The Admin also selects the role (Student or Teacher). Field lengths, data types 
 - Identifier and email comparisons ignore letter case and leading/trailing whitespace.
 
 ### Stimulus/Response Sequences
-
+ 
 | # | Stimulus (trigger) | System validation | System response |
 |---|---|---|---|
-| SR-1 | Admin submits a valid account-creation request with a unique identifier and email. | Admin authenticated; required fields valid; identifier and email unique. | Account created as Active; password setup initiated; Admin sees a confirmation. No session is created for the new user. |
-| SR-2 | Admin submits a request with a missing or invalid field. | Field validation fails. | No account created; every failing field is identified; entered non-password values are retained. |
-| SR-3 | Admin submits an SRN, Staff ID, Admin ID or email already in use. | Uniqueness check finds a match. | Request rejected; existing account unchanged; error names the duplicated field. |
-| SR-4 | A non-Admin or unauthenticated user attempts account creation. | Authentication/role check fails. | Access denied; no account created. |
+| SR-1 | Administrator submits a valid account-creation request with a unique identifier and email. | Administrator authenticated; required fields valid; identifier and email unique. | Account created as Active; password setup initiated; Administrator sees a confirmation. No session is created for the new user. |
+| SR-2 | Administrator submits a request with a missing or invalid field. | Field validation fails. | No account created; every failing field is identified; entered non-password values are retained. |
+| SR-3 | Administrator submits an SRN, Staff ID, Administrator ID or email already in use. | Uniqueness check finds a match. | Request rejected; existing account unchanged; error names the duplicated field. |
+| SR-4 | A non-Administrator or unauthenticated user attempts account creation. | Authentication/role check fails. | Access denied; no account created. |
 | SR-5 | New user submits a valid password and matching confirmation using a valid setup credential. | Credential valid, unused, unexpired; password rules met. | Password hashed and stored; credential invalidated; user directed to log in separately. |
 | SR-6 | New user submits a password that breaks the rules, does not match, or uses an invalid/expired credential. | Password or credential check fails. | Nothing stored; message states what failed. |
 | SR-7 | User tries to log in before setting a password. | No password set for the account. | Login rejected with a generic authentication-failure message. |
-
+ 
 ### Functional Requirements
-
-- **REQ-ONB-001:** The system shall allow only an authenticated Admin to create accounts, and shall reject any other attempt with an access-denied message and no account created.
-- **REQ-ONB-002:** The system shall provide no self-registration function, and shall provide a pre-seeded Admin account created during initial system setup (handling of its initial credential is specified in Section 6.3).
-- **REQ-ONB-003:** The system shall require the Admin to select exactly one role (Student or Teacher) for each new account, and shall store the selected role with the account.
-- **REQ-ONB-004:** For a Student account, the system shall require SRN, name, email and academic/program details (as defined in Appendix B).
-- **REQ-ONB-005:** For a Teacher account, the system shall require Staff ID, name, email and department details (as defined in Appendix B).
-- **REQ-ONB-006:** The system shall neither require nor accept a password from the Admin when creating a Student or Teacher account.
+ 
+- **REQ-ONB-001:** The system shall allow only an authenticated Administrator to create accounts, and shall reject any other attempt with an access-denied message and no account created.
+- **REQ-ONB-002:** The system shall provide no self-registration function, and shall provide a pre-seeded Administrator account created during initial system setup (handling of its initial credential is specified in Section 6.3).
+- **REQ-ONB-003:** The system shall require the Administrator to select exactly one role (Student or Faculty) for each new account, and shall store the selected role with the account.
+- **REQ-ONB-004:** For a Student account, the system shall require SRN, name, email and academic/programme details (as defined in Appendix B).
+- **REQ-ONB-005:** For a Faculty account, the system shall require Staff ID, name, email and department details (as defined in Appendix B).
+- **REQ-ONB-006:** The system shall neither require nor accept a password from the Administrator when creating a Student or Faculty account.
 - **REQ-ONB-007:** The system shall trim leading and trailing whitespace from text inputs, and shall reject a request in which a required field is missing or blank, an email is not in a valid format (one "@" with non-empty parts and a "." in the domain), or any value violates the limits in Appendix B.
 - **REQ-ONB-008:** When validation fails, the system shall create no account, shall display an error message identifying every invalid or missing field, and shall retain the entered non-password values.
-- **REQ-ONB-009:** The system shall ensure that no two accounts share the same SRN, Staff ID, Admin ID or email address (compared without regard to letter case), including when two requests are submitted simultaneously.
+- **REQ-ONB-009:** The system shall ensure that no two accounts share the same SRN, Staff ID, Administrator ID or email address (compared without regard to letter case), including when two requests are submitted simultaneously.
 - **REQ-ONB-010:** When a submitted identifier or email duplicates an existing account, the system shall reject the request, leave the existing account unchanged, and display an error message that names the duplicated field and discloses no other data of the existing account.
-- **REQ-ONB-011:** The system shall set a successfully created account to Active with no approval step, and shall record the creation time and the creating Admin.
-- **REQ-ONB-012:** Upon successful account creation, the system shall initiate a secure initial-password setup through which the user sets their own password, and shall never reveal that password to the Admin or any other user.
+- **REQ-ONB-011:** The system shall set a successfully created account to Active with no approval step, and shall record the creation time and the creating Administrator.
+- **REQ-ONB-012:** Upon successful account creation, the system shall initiate a secure initial-password setup through which the user sets their own password, and shall never reveal that password to the Administrator or any other user.
 - **REQ-ONB-013:** The system shall issue the setup credential as single-use, bound to one account and valid for a limited period (period and delivery mechanism TBD in Section 6.3).
 - **REQ-ONB-014:** The system shall reject a setup credential that is used, expired or invalid, shall set no password, and shall inform the user that the credential is not valid.
 - **REQ-ONB-015:** The system shall require the password to be entered twice with matching entries, to have at least 8 characters, and to contain at least one uppercase letter, one lowercase letter, one digit and one special character; otherwise it shall not store the password and shall state which rule was not met.
 - **REQ-ONB-016:** The system shall store a password only as a salted, adaptive, one-way hash (algorithm defined in Section 6.3), and shall not store, log or display it in plaintext.
 - **REQ-ONB-017:** Upon successful password setup, the system shall invalidate the setup credential, shall create no authenticated session, and shall direct the user to log in separately.
 - **REQ-ONB-018:** The system shall use the registered email address as the login identifier, and shall reject login for an account whose password is not yet set with the same generic message used for incorrect credentials.
-- **REQ-ONB-019:** Upon successful account creation, the system shall show the Admin a confirmation containing the new account's identifier, name and role, and no password, hash or setup credential.
+- **REQ-ONB-019:** Upon successful account creation, the system shall show the Administrator a confirmation containing the new account's identifier, name and role, and no password, hash or setup credential.
 - **REQ-ONB-020:** The system shall create an account atomically, leaving no partial account if any step fails, and shall show a generic error message that exposes no internal details when an unexpected error occurs.
 
 ## Edit Records
@@ -108,7 +107,7 @@ Field lengths, data types, mandatory status and the final field list are defined
 | SR-3 | Administrator submits an invalid value (for example a malformed email). | Field validation fails. | Nothing saved; message shown beside each invalid field; other entered values retained. |
 | SR-4 | Administrator submits changes to a record that another user saved after it was opened. | Version check finds the record has changed. | Update rejected; user told the record has changed; latest values displayed so the edit can be re-applied. |
 | SR-5 | Administrator sets a student's status to Inactive. | Confirmation required and given. | Record retained; student excluded from new attendance and grade entry; change logged. |
-| SR-6 | A Teacher or Student attempts to edit a student record. | Role check fails. | Access denied; no record data disclosed; attempt logged. |
+| SR-6 | A Faculty or Student attempts to edit a student record. | Role check fails. | Access denied; no record data disclosed; attempt logged. |
  
 ### Functional Requirements
  
