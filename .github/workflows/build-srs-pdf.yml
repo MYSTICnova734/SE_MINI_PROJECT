@@ -2,6 +2,7 @@ name: Build SRS PDF
 
 # Runs whenever the SRS Markdown changes on main, rebuilds the PDF,
 # and commits it back to docs/srs/SRS.pdf (overwriting the previous version).
+
 on:
   push:
     branches: [main]
@@ -11,11 +12,20 @@ on:
 permissions:
   contents: write
 
+# Only one build at a time. If more pushes arrive while a build is running,
+# GitHub keeps just the newest waiting run. Since each run checks out the
+# latest main when it starts, that single run picks up every earlier change.
+concurrency:
+  group: build-srs-pdf
+  cancel-in-progress: false
+
 jobs:
   build-pdf:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Install pandoc + LaTeX
         run: |
@@ -25,8 +35,29 @@ jobs:
       - name: Build PDF
         run: bash docs/srs/build.sh
 
-      - name: Commit built PDF
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "docs: auto-build SRS.pdf [skip ci]"
-          file_pattern: docs/srs/SRS.pdf
+      # Commit first, THEN rebase onto whatever landed on main during the build,
+      # then push. (Rebasing before committing fails because the freshly built
+      # PDF is an uncommitted change in the working tree.)
+      - name: Commit and push built PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/srs/SRS.pdf
+          if git diff --cached --quiet; then
+            echo "SRS.pdf unchanged, nothing to commit."
+            exit 0
+          fi
+          git commit -m "docs: auto-build SRS.pdf [skip ci]"
+
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push attempt $attempt failed, retrying..."
+            sleep $((RANDOM % 5 + 2))
+          done
+
+          echo "Could not push after 3 attempts."
+          exit 1
