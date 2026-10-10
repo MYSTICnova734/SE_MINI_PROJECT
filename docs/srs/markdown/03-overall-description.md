@@ -115,9 +115,43 @@ The descriptions of technical proficiency and frequency of use below are assumpt
      DD-Mon-YYYY (Appendix D), the system will be self-hosted via Docker." -->
 
 ## Design and Implementation Constraints
-<!-- Chosen stack, self-hosted vs cloud decision, language/framework mandates, security considerations. -->
-
-TODO
+ 
+The following constraints limit the options available to the developers. Where a constraint comes from the stakeholder discussions, the date is given (Appendix D).
+ 
+**Deployment**
+ 
+- The system shall be self-hosted on the institution's own servers and packaged with Docker (24 September 2026). Cloud and serverless deployment were considered and rejected, so the design must not depend on any cloud provider's services.
+- The software shall be open source and maintainable by the institution's existing IT team, with no paid licences.
+**Technology**
+ 
+- The frontend shall be built with React and the backend with Flask (Python).
+- The database shall be MySQL in every environment: development, testing and deployment. No other database is used.
+- The frontend and backend shall communicate through a REST API using JSON (Section 3.2).
+- Exact versions of all components shall be pinned in the project's dependency files and recorded in the design document.
+**Architecture**
+ 
+- The backend shall be the only component that accesses the database. The frontend shall never access it directly.
+- All authentication, authorisation and validation shall be enforced in the backend. Checks in the frontend are for convenience only (REQ-RBAC-003).
+- Operations that change several rows together shall run in a single database transaction, and editable records shall carry a version number so that stale updates are detected (Section 3.2).
+- The design shall be modular and extensible, so that the deferred features (fee management, timetable generation, a parent portal and single sign-on integration) can be added later without reworking the existing functions (6 October 2026).
+**Security and privacy**
+ 
+- Passwords shall be stored only as salted, adaptive, one-way hashes, never in plaintext (REQ-ONB-016). The algorithm is defined in Section 6.3.
+- Access shall be role-based and deny by default (Section 5.6).
+- Student records are personal data and shall be handled in compliance with the Digital Personal Data Protection Act, 2023 (24 September 2026).
+- The audit trail shall be append-only and shall not be modifiable through the application.
+- Student records shall not be permanently deleted through the application (REQ-REC-009). Their retention period follows the university's records policy (TBD).
+- The database shall be backed up regularly.
+**Performance**
+ 
+- Record retrieval shall take under two seconds under normal load, with the system designed for about 10,000 users and a few hundred concurrent users at peak (24 September 2026). See Section 6.1.
+**Development process (course guidelines)**
+ 
+- Development shall follow an Agile process, using Git and GitHub with Jira or a similar tool for user stories and the backlog.
+- A CI/CD pipeline (Jenkins), code reviews and security validation are mandatory.
+- Automated tests shall use pytest, with unit test reports showing code and branch coverage, and static analysis (SonarQube or similar) shall be applied.
+- Documentation is as important as code, and the design shall be modular, maintainable and debuggable.
+- A coding standard (for example PEP 8 for Python) shall be fixed in the design document.
 
 <!-- Cite the stack decision the same way, referencing the relevant
      Appendix D entry rather than just stating the conclusion. -->
