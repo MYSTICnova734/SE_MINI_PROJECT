@@ -6,7 +6,25 @@
 TODO
 
 ## Safety Requirements
-TODO — likely N/A or brief for this project type, but don't just delete the section.
+ 
+The Student Record System does not control any physical equipment, so it poses no physical safety hazard and no safety certification is required. The harm it could cause is to the institution's data and to the people the data describes: records that are lost or corrupted, grades that are calculated wrongly, or consequential actions taken by mistake. The requirements below guard against these. Protection of personal data from unauthorised access is covered in Section 6.3.
+ 
+**Data loss and recovery**
+ 
+- **REQ-SAF-001:** The system shall support a full backup of the database at least once every 24 hours, and the 14 most recent backups shall be retained.
+- **REQ-SAF-002:** Backups shall be stored on storage separate from the storage that holds the live database.
+- **REQ-SAF-003:** The project shall provide a documented procedure for restoring the database from a backup, and the procedure shall be tested successfully before release. A restored system shall be in a consistent state, with the audit trail intact up to the time of the backup.
+- **REQ-SAF-004:** After a restore, no more than 24 hours of changes shall be lost.
+**Data integrity**
+ 
+- **REQ-SAF-005:** The system shall run every operation that changes several records together as a single transaction, so that it completes in full or leaves no change (see REQ-REC-006, REQ-ONB-020 and Section 3.2).
+- **REQ-SAF-006:** The database shall itself enforce uniqueness and referential integrity, so that an application defect cannot create orphaned data, such as a mark for a student or rubric component that does not exist.
+- **REQ-SAF-007:** The system shall calculate marks and weighted totals using exact decimal arithmetic rather than floating-point arithmetic, so that rounding errors cannot change a student's result.
+- **REQ-SAF-008:** When the database is unavailable, the system shall reject any request that would change data, shall show a clear message saying so, shall not apply any part of the request, and shall resume normal operation automatically when the database returns.
+**Preventing mistakes**
+ 
+- **REQ-SAF-009:** The system shall require explicit confirmation before it deactivates an account, publishes a course's grades, amends a published mark, or changes a rubric after marks have been recorded (see REQ-REC-009, REQ-GRD-006, REQ-GRD-018 and REQ-GRD-021).
+- **REQ-SAF-010:** Development and test environments shall use synthetic data only, and shall never hold real student data.
 
 ## Security Requirements
 <!-- From reqs.txt: auth. Password hashing approach, session handling, RBAC enforcement point. -->
