@@ -1,9 +1,46 @@
 # Overall Description
 
 ## Product Perspective
-<!-- New, self-contained product? Describe the overall context. A simple component diagram helps. -->
-
-TODO
+ 
+The Student Record System is a new, self-contained product. It replaces the spreadsheets and departmental registers the institution currently uses for student details, attendance and grades (Appendix D). It is not a follow-on to an earlier system and is not a component of a larger one. In this release it does not exchange data with any other institutional system. Integration with the university's single sign-on service has been deferred (Section 1.3).
+ 
+The system is a three-tier web application, shown below.
+ 
+```
+  Administrator / Faculty / Student
+  (web browser running the frontend)
+                  |
+                  |  HTTP(S), JSON
+                  v
+  +-------------------------------------+
+  |  Backend: Flask application         |
+  |  Authentication, role-based access, |
+  |  validation, business rules,        |
+  |  audit trail                        |
+  +-------------------------------------+
+                  |
+                  |  ORM / SQL
+                  v
+  +-------------------------------------+
+  |  Database: MySQL                    |
+  +-------------------------------------+
+ 
+  Frontend: React single-page application,
+  served to the browser by the system.
+ 
+  All components run as Docker containers on
+  the institution's own servers (self-hosted).
+```
+ 
+Users reach the system through a standard web browser. The React frontend presents the user interface. The Flask backend is the only component that reads or writes data, and it enforces authentication, role-based access, validation and business rules on every request, so checks in the frontend are only a convenience (REQ-RBAC-003). MySQL stores all persistent data, including the audit trail, and is the same database in development, testing and deployment. The system is self-hosted because the institution's users are mostly on or near the campus, so a cloud provider's wide geographic reach offers little benefit, and the institution's own IT team can maintain it (Appendix D).
+ 
+**Interfaces to the outside.** The system has only two:
+ 
+- the users' web browsers (Sections 3.1 and 3.3); and
+- the means of delivering the setup credential that lets a new user set their own password. The delivery mechanism is TBD in Section 6.3.
+**How the major parts relate.** Account management and role-based access (5.1 and 5.6) underlie every other function, since nothing can be done without an authenticated account that has the right role. Student records (5.2) are the foundation that attendance (5.3) and grading (5.4) attach to. Retrieval (5.5) reads all of them. The audit trail records changes made through every function.
+ 
+Because deferred features such as fee management and a parent portal are expected to follow, the parts above are kept separate so that new functions can be added without changing the existing ones.
 
 ## Product Functions
 <!-- High-level bullet list of major functions - one line each, detail comes later in Section 5. -->
