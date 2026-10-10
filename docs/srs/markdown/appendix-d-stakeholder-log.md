@@ -4,7 +4,7 @@ This project had no real customer, so a hypothetical stakeholder was used to gro
  
 ## Persona
  
-**Name / Role:** Dr. Raghavendra Kulkarni, Vice Chancellor
+**Name / Role:** Dr. Kobe Bryant, Vice Chancellor
  
 **Context:** Dr. Kulkarni oversees a university with approximately 10,000 students and staff combined. Student records, attendance and grades are currently maintained across spreadsheets and departmental registers, which makes consolidated reporting slow and access control inconsistent. He has commissioned a single Student Record System for the whole institution.
  
@@ -78,12 +78,25 @@ Third, the main advantage of the cloud does not apply here. Cloud platforms are 
 - Performance target: record retrieval in under 2 seconds under normal load.
 - Security: hashed passwords, role-based access enforced on the server, audit trail of changes, regular database backups.
 
-## Discussion 3 — Sign-off (DATE)
-
-**Topics covered:** final scope confirmation, any descoped features.
-
-**Q:** TODO
-**A:** TODO
-
+## Discussion 3: Sign-off (Tuesday, 6 October 2026)
+ 
+**Topics covered:** final scope confirmation, items excluded from this release, acceptance.
+ 
+**Q:** Having reviewed the scope, is there anything that must be added before work begins?
+ 
+**A:** No additions. The six features agreed in Discussion 1 cover the immediate need.
+ 
+**Q:** Are there features that can safely be deferred?
+ 
+**A:** Yes. Fee management, timetable generation, a parent portal and integration with the university's single sign-on service are out of scope for this release. They can be considered in a later phase, and the design should not make them hard to add.
+ 
+**Q:** Is the proposed deployment plan acceptable to the institution's IT team?
+ 
+**A:** Yes. The IT team has reviewed the self-hosted, containerised approach and confirmed they can host and maintain it on existing infrastructure.
+ 
 **Decisions made:**
-- TODO
+ 
+- Scope for this release is the six confirmed features: onboarding, editing records, attendance with constraints, rubric-based grading, retrieval, and role-based access.
+- Out of scope: fee management, timetable generation, parent portal, single sign-on integration.
+- The extensibility of the design to accommodate deferred features later is a stated design goal.
+- The stakeholder approved the SRS scope, deployment model and technology stack as recorded in this appendix.
