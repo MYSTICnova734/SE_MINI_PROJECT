@@ -30,7 +30,7 @@ The rest of the document is organised as follows.
 
 **Conventions used in this document.**
 
-- Each functional requirement has a unique identifier of the form `REQ-XXX-nnn` (for example `REQ-GRD-004`). The prefixes are ONB, REC, ATT, GRD, RET and RBAC, one for each function.
+- Each functional requirement has a unique identifier of the form `REQ-XXX-nnn` (for example `REQ-GRD-004`). The prefixes are ONB, REC, ATT, GRD, RET and RBAC, one for each function, and SEC, SAF, QUA and OTH for the security, safety, quality and other requirements in Sections 6 and 7. Business rules in Section 6.5 are numbered `BR-nnn`.
 - The word "shall" marks a mandatory requirement.
 - "TBD" marks information not yet available. Each TBD names the section where it will be resolved.
 - Terms such as Administrator, Faculty, Anchor Faculty and Inactive have the specific meanings given in Appendix A, and are capitalised or used in those exact forms throughout.
