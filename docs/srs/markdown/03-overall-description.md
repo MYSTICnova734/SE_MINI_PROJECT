@@ -97,6 +97,7 @@ The descriptions of technical proficiency and frequency of use below are assumpt
 - **Technical proficiency (assumed):** Basic. The Student is expected to be able to log in and read information presented on screen.
 - **Frequency of use (assumed):** Occasional, typically to check attendance or grades. Use rises sharply when results are published.
 - **Important characteristics and limitations:** A Student cannot access any other student's records and cannot modify their own grades or attendance. Students are by far the most numerous user class, and their access depends on an Administrator creating their account. A Student whose account is Inactive cannot log in.
+
 **Priority of user classes.** Faculty are the most important class to satisfy. They enter most of the data, so the accuracy and timeliness of attendance and grades depend on the system being quick and easy for them to use. Administrators come next, because correct accounts and records underlie every other function. Students are the largest class but only read information, so their needs centre on simple login and clear results.
 
 ## Operating Environment
@@ -111,9 +112,6 @@ The descriptions of technical proficiency and frequency of use below are assumpt
  
 **Other software.** Apart from the software inside its own containers, the system relies on the institution's backup facilities, since the database is backed up regularly (Appendix D). If an email service is used to deliver setup credentials, it must also be reachable from the server. This is TBD in Section 6.3.
 
-<!-- Cite the deployment decision, e.g.: "Per stakeholder discussion,
-     DD-Mon-YYYY (Appendix D), the system will be self-hosted via Docker." -->
-
 ## Design and Implementation Constraints
  
 The following constraints limit the options available to the developers. Where a constraint comes from the stakeholder discussions, the date is given (Appendix D).
@@ -122,18 +120,21 @@ The following constraints limit the options available to the developers. Where a
  
 - The system shall be self-hosted on the institution's own servers and packaged with Docker (24 September 2026). Cloud and serverless deployment were considered and rejected, so the design must not depend on any cloud provider's services.
 - The software shall be open source and maintainable by the institution's existing IT team, with no paid licences.
+
 **Technology**
  
 - The frontend shall be built with React and the backend with Flask (Python).
 - The database shall be MySQL in every environment: development, testing and deployment. No other database is used.
 - The frontend and backend shall communicate through a REST API using JSON (Section 3.2).
 - Exact versions of all components shall be pinned in the project's dependency files and recorded in the design document.
+
 **Architecture**
  
 - The backend shall be the only component that accesses the database. The frontend shall never access it directly.
 - All authentication, authorisation and validation shall be enforced in the backend. Checks in the frontend are for convenience only (REQ-RBAC-003).
 - Operations that change several rows together shall run in a single database transaction, and editable records shall carry a version number so that stale updates are detected (Section 3.2).
 - The design shall be modular and extensible, so that the deferred features (fee management, timetable generation, a parent portal and single sign-on integration) can be added later without reworking the existing functions (6 October 2026).
+
 **Security and privacy**
  
 - Passwords shall be stored only as salted, adaptive, one-way hashes, never in plaintext (REQ-ONB-016). The algorithm is defined in Section 6.3.
@@ -142,9 +143,11 @@ The following constraints limit the options available to the developers. Where a
 - The audit trail shall be append-only and shall not be modifiable through the application.
 - Student records shall not be permanently deleted through the application (REQ-REC-009). Their retention period follows the university's records policy (TBD).
 - The database shall be backed up regularly.
+
 **Performance**
  
 - Record retrieval shall take under two seconds under normal load, with the system designed for about 10,000 users and a few hundred concurrent users at peak (24 September 2026). See Section 6.1.
+
 **Development process (course guidelines)**
  
 - Development shall follow an Agile process, using Git and GitHub with Jira or a similar tool for user stories and the backlog.
@@ -153,15 +156,28 @@ The following constraints limit the options available to the developers. Where a
 - Documentation is as important as code, and the design shall be modular, maintainable and debuggable.
 - A coding standard (for example PEP 8 for Python) shall be fixed in the design document.
 
-<!-- Cite the stack decision the same way, referencing the relevant
-     Appendix D entry rather than just stating the conclusion. -->
-
 ## Assumptions and Dependencies
-<!-- E.g. assumes single institution scale, single term of data, etc. -->
+ 
+Each assumption below is also noted where it matters. If one proves wrong, the requirements that depend on it must be revisited.
+ 
+**Assumptions**
+ 
+- **No real customer.** This is an academic project, and no real customer was available. A hypothetical stakeholder, the Vice Chancellor of an institution of about 10,000 students and staff, stands in for the customer, and the scope and design decisions were fixed in three discussions recorded in Appendix D. This is itself an assumption, not a footnote.
+- **One institution, many terms.** The system serves a single institution, and its data accumulates across terms.
+- **Users are mostly on or near campus,** on the institution's network, as stated in Section 2.4.
+- **The IT team will host and maintain the system.** It is assumed to have the skills to run Docker containers and MySQL, to provide the servers and network, and to take regular backups (confirmed in the discussions of 24 September and 6 October 2026).
+- **Courses, terms, teaching assignments and enrolments exist.** Grading and role-based access depend on them. How they are created is TBD (Sections 5.4 and 5.6).
+- **A schedule of class sessions is available.** Attendance can be marked only for scheduled sessions, and timetable generation is out of scope. How the schedule reaches the system is TBD (Section 5.3).
+- **Every user has a unique email address** and can receive the setup credential. Email verification is out of scope, and the delivery mechanism is TBD (Section 6.3).
+- **The institution will supply its grade bands and its records retention period,** which are TBD (Sections 5.4 and 2.5).
+- **At least one Administrator account stays Active.** Administrator accounts cannot be created through the application, so the institution must keep one usable (see the TBD in Section 5.6).
+- **Users' browsers are current, and their technical proficiency is as described in Section 2.3.**
+**Dependencies**
+ 
+- **Open-source components:** React, Flask, MySQL, Docker, a password-hashing library (bcrypt or argon2) and an ORM (SQLAlchemy, to be confirmed in the design document). They must remain available and continue to receive security fixes. Their versions are pinned (Section 3.2).
+- **The institution's infrastructure:** its servers, network and backup facilities.
+- **The setup-credential delivery mechanism,** to be defined in Section 6.3.
+- **The DPDP Act, 2023.** The system's obligations may change if the law or its rules change.
+- **The institution's policies** on grading and on records retention.
 
-TODO
-
-<!-- Include explicitly: "No real customer was available for this academic
-     project; a hypothetical stakeholder (Appendix D) was used to ground
-     scope and design decisions." This is the assumption itself, not a
-     footnote — call it out as one. -->
+The system depends on no other institutional system or external service in this release.
