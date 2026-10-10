@@ -81,10 +81,14 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Authentication | Verifying that a user is who they claim to be, by means of their email address and password. |
 | Authenticated Session | The period after a successful login during which the system accepts a user's requests. This is distinct from a class session (A.4). The mechanism is defined in Section 6.3. |
 | Authorisation | Deciding whether an authenticated user is permitted to perform a particular action. |
+| Availability | The proportion of time during which the system is usable. |
 | Backend | The server-side application, built with Flask, that enforces access control, validation and business rules and is the only component that accesses the database. |
+| Backup | A complete copy of the database, kept separately so that the system can be restored after data loss. |
 | bcrypt | The password-hashing algorithm used by the system (Section 6.3). |
 | Bound Parameter | A value passed to the database separately from the text of a query, so that user input is never interpreted as part of the query. This prevents SQL injection. |
 | Cloud Deployment | Running the system on a third-party provider's infrastructure (for example AWS, GCP, Azure or Firebase). Considered and not chosen (Appendix D). |
+| Code Coverage | The proportion of the code that is executed by automated tests. Line coverage counts lines of code run, and branch coverage counts the decision outcomes (such as both sides of an if statement) taken. |
+| Database Migration | A versioned script that changes the database schema in a controlled, repeatable way. |
 | Docker | A tool that packages an application and its dependencies into containers so that it runs the same way on any server. |
 | Flask | The Python web framework used to build the backend. |
 | Frontend | The browser-based user interface, built with React. |
@@ -104,8 +108,9 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 
 | Term | Definition |
 |------------|------------------------------------------------|
+| Business Rule | An operating principle of the system, such as which role may do what and under which circumstances. Business rules are listed in Section 6.5 and numbered BR-nnn. |
 | Hypothetical Stakeholder | The fictional institutional representative used in place of a real customer to ground scope and design decisions. See Appendix D. |
-| Requirement ID | The unique tag given to each functional requirement, in the form REQ-XXX-nnn. The prefixes are ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), RET (retrieval), RBAC (role-based access) and SEC (security, Section 6.3). |
+| Requirement ID | The unique tag given to each functional requirement, in the form REQ-XXX-nnn. The prefixes are ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), RET (retrieval), RBAC (role-based access), SEC (security, Section 6.3), SAF (safety, Section 6.2), QUA (quality attributes, Section 6.4) and OTH (other requirements, Section 7). Business rules use the form BR-nnn. |
 | Stimulus/Response Sequence (SR) | A numbered pairing of a user action (stimulus) and the system's behaviour in response, used to describe each feature. |
 | TBD | To be determined: information not yet available at the time of writing. |
 
@@ -116,8 +121,11 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | CI/CD | Continuous Integration / Continuous Deployment |
 | DPDP Act | Digital Personal Data Protection Act, 2023 (India) |
 | HTTP(S) | Hypertext Transfer Protocol (Secure) |
+| IST | Indian Standard Time |
 | JSON | JavaScript Object Notation |
 | NFR | Nonfunctional Requirement |
 | SQL | Structured Query Language |
 | SRS | Software Requirements Specification |
 | UI | User Interface |
+| UTC | Coordinated Universal Time |
+| WCAG | Web Content Accessibility Guidelines |
