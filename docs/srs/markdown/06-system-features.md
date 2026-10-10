@@ -1,4 +1,4 @@
-# 5. System Features
+# System Features
 
 <!--
 One subsection per feature from reqs.txt. Each REQ-ID should be unique - use the feature
@@ -6,9 +6,9 @@ prefix shown so IDs never collide when everyone edits this file.
 Prefixes: ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), RET (retrieval), RBAC (roles)
 -->
 
-## 5.1 Onboarding
+## Onboarding
 
-### 5.1.1 Description and Priority
+### Description and Priority
 
 **Description.** Onboarding is how user accounts are created in the Student Record System. An authenticated Admin creates Student and Teacher accounts and assigns each account a role. Self-registration is out of scope. The Admin never sets or knows the user's password. The user sets their own password through a secure initial-password setup, then logs in separately using their registered email address and password.
 
@@ -34,7 +34,7 @@ The Admin also selects the role (Student or Teacher). Field lengths, data types 
 - Email verification is out of scope.
 - Identifier and email comparisons ignore letter case and leading/trailing whitespace.
 
-### 5.1.2 Stimulus/Response Sequences
+### Stimulus/Response Sequences
 
 | # | Stimulus (trigger) | System validation | System response |
 |---|---|---|---|
@@ -46,7 +46,7 @@ The Admin also selects the role (Student or Teacher). Field lengths, data types 
 | SR-6 | New user submits a password that breaks the rules, does not match, or uses an invalid/expired credential. | Password or credential check fails. | Nothing stored; message states what failed. |
 | SR-7 | User tries to log in before setting a password. | No password set for the account. | Login rejected with a generic authentication-failure message. |
 
-### 5.1.3 Functional Requirements
+### Functional Requirements
 
 - **REQ-ONB-001:** The system shall allow only an authenticated Admin to create accounts, and shall reject any other attempt with an access-denied message and no account created.
 - **REQ-ONB-002:** The system shall provide no self-registration function, and shall provide a pre-seeded Admin account created during initial system setup (handling of its initial credential is specified in Section 6.3).
@@ -69,59 +69,59 @@ The Admin also selects the role (Student or Teacher). Field lengths, data types 
 - **REQ-ONB-019:** Upon successful account creation, the system shall show the Admin a confirmation containing the new account's identifier, name and role, and no password, hash or setup credential.
 - **REQ-ONB-020:** The system shall create an account atomically, leaving no partial account if any step fails, and shall show a generic error message that exposes no internal details when an unexpected error occurs.
 
-## 5.2 Edit Records
+## Edit Records
 
-### 5.2.1 Description and Priority
+### Description and Priority
 TODO
 
-### 5.2.2 Stimulus/Response Sequences
+### Stimulus/Response Sequences
 TODO
 
-### 5.2.3 Functional Requirements
+### Functional Requirements
 - REQ-REC-1:
 - REQ-REC-2:
 
-## 5.3 Mark Attendance (with constraints)
+## Mark Attendance (with constraints)
 
-### 5.3.1 Description and Priority
+### Description and Priority
 TODO
 
-### 5.3.2 Stimulus/Response Sequences
+### Stimulus/Response Sequences
 TODO
 
-### 5.3.3 Functional Requirements
+### Functional Requirements
 <!-- Nail down the actual constraint rules here, e.g. edit window, overlapping sessions, etc. -->
 - REQ-ATT-1:
 - REQ-ATT-2:
 
-## 5.4 Mark Grades (with rubric)
+## Mark Grades (with rubric)
 
-### 5.4.1 Description and Priority
+### Description and Priority
 TODO
 
-### 5.4.2 Stimulus/Response Sequences
+### Stimulus/Response Sequences
 TODO
 
-### 5.4.3 Functional Requirements
+### Functional Requirements
 <!-- Decide: fixed-schema rubric vs teacher-configurable rubric - document the decision. -->
 - REQ-GRD-1:
 - REQ-GRD-2:
 
-## 5.5 Retrieval
+## Retrieval
 
-### 5.5.1 Description and Priority
+### Description and Priority
 TODO
 
-### 5.5.2 Stimulus/Response Sequences
+### Stimulus/Response Sequences
 TODO
 
-### 5.5.3 Functional Requirements
+### Functional Requirements
 - REQ-RET-1:
 - REQ-RET-2:
 
-## 5.6 Role-Based Access
+## Role-Based Access
 
-### 5.6.1 Description and Priority
+### Description and Priority
 
 **Description.** Role-Based Access Control (RBAC) decides which functions and records each authenticated user may use. Every account has exactly one role: Admin, Teacher or Student. The role is assigned at account creation (Section 5.1), and only an Admin can change it. Permissions are enforced in both the frontend and the backend, and the backend is the authoritative enforcement layer. Anything not explicitly permitted to a role is denied. Authentication (Section 5.1 and Section 6.3) establishes who the user is, and authorization (this section) decides what that user may do.
 
@@ -141,7 +141,7 @@ TODO
 - How a Teacher is assigned to a Student is TBD. RBAC only requires that the assignment exists.
 - TBD in this version: whether an Admin may deactivate their own or the last remaining Admin account, and how records and assignments are handled when an account's role changes.
 
-### 5.6.2 Stimulus/Response Sequences
+### Stimulus/Response Sequences
 
 | # | Stimulus (trigger) | System validation | System response |
 |---|---|---|---|
@@ -155,7 +155,7 @@ TODO
 | SR-8 | Deactivated user tries to log in or uses an existing session. | Account status is Deactivated. | Request rejected; no data returned; no new session created. |
 | SR-9 | Unauthenticated user, or user with an expired/invalid session, requests a protected function. | Authentication check fails. | Request rejected; user directed to log in; no data returned. |
 
-### 5.6.3 Functional Requirements
+### Functional Requirements
 
 - **REQ-RBAC-001:** The system shall support exactly three roles (Admin, Teacher and Student) and shall associate every account with exactly one role at all times.
 - **REQ-RBAC-002:** The system shall deny any function or record access that is not explicitly permitted to the requesting user's role.

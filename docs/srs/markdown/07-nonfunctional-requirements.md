@@ -1,21 +1,21 @@
-# 6. Other Nonfunctional Requirements
+# Other Nonfunctional Requirements
 
-## 6.1 Performance Requirements
+## Performance Requirements
 <!-- From reqs.txt: speed/efficiency. Be specific - response time targets, expected concurrent users. -->
 
 TODO
 
-## 6.2 Safety Requirements
+## Safety Requirements
 TODO — likely N/A or brief for this project type, but don't just delete the section.
 
-## 6.3 Security Requirements
+## Security Requirements
 <!-- From reqs.txt: auth. Password hashing approach, session handling, RBAC enforcement point. -->
 
 TODO
 
-## 6.4 Software Quality Attributes
+## Software Quality Attributes
 <!-- Pick 2-3 that matter: maintainability, usability, reliability - and be specific. -->
-## 6.3 Security Requirements
+## Security Requirements
 
 Security requirements for authentication, password protection, session handling, authorization enforcement, and protection of student data. They complete the items that Sections 5.1 and 5.6 defer to this section: hashing algorithm, session mechanism, setup-credential rules, and audit-log rules. Functional behaviour of onboarding and role-based access is in Sections 5.1 and 5.6 and is not repeated here. The numeric values below (for example timeouts and the lockout threshold) are team decisions for this project; the other numbers are reasonable defaults for a student record system.
 
@@ -53,7 +53,7 @@ Security requirements for authentication, password protection, session handling,
 - **REQ-SEC-019:** The project's continuous integration shall run static code analysis, and a release shall not be made while high-severity security findings remain unresolved.
 TODO
 
-## 6.5 Business Rules
+## Business Rules
 <!-- Who can do what under which circumstances - ties directly into RBAC and grading rules. -->
 
 TODO

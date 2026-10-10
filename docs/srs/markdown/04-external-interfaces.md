@@ -1,6 +1,6 @@
-# 3. External Interface Requirements
+# External Interface Requirements
 
-## 3.1 User Interfaces
+## User Interfaces
 
 The Student Record System is accessed by Admin, Teacher and Student users through a web-based frontend (Sections 2.3 and 5.6). Wireframes and mockups have not been produced for this version. Screen layouts and the interfaces for Sections 5.2 to 5.5 (records, attendance, grades, retrieval) are TBD until those sections are finalised.
 
@@ -28,7 +28,7 @@ The Student Record System is accessed by Admin, Teacher and Student users throug
 - **Unexpected or authorization-check errors:** Only a generic message is shown, without stack traces, file paths, query text or other internal details (REQ-SEC-016, REQ-RBAC-015).
 - **Passwords and hashes:** These are never displayed on any screen (REQ-SEC-004).
 
-## 3.2 Software Interfaces
+## Software Interfaces
 
 The implementation stack (languages, frameworks, database product, hosting operating system) has not yet been fixed in the SRS (Sections 2.4 and 2.5 and Appendix D are incomplete). Items below are therefore marked TBD where not established.
 
@@ -43,7 +43,7 @@ The implementation stack (languages, frameworks, database product, hosting opera
 
 No third-party APIs are used, and student and user data is not disclosed to third parties (REQ-SEC-018). The server operating system and other runtime dependencies are TBD pending Section 2.4.
 
-## 3.3 Communications Interfaces
+## Communications Interfaces
 
 - **Client–server communication:** Users reach the system through a web browser. All client–server communication uses an encrypted connection (HTTPS). Unencrypted requests are rejected or redirected, and the session identifier is sent only over the encrypted connection and in a form not readable by client-side scripts (REQ-SEC-010). Protocol version and certificate arrangements are TBD.
 - **Request/response model:** The frontend sends each user action to the backend and shows the backend's response. Every protected request carries the session identifier and is checked for authentication and authorization before processing (REQ-RBAC-003, REQ-RBAC-006). State-changing requests also carry a valid anti-forgery token tied to the session (REQ-SEC-015). A REST/JSON message format and API route conventions have not been established and are TBD.
