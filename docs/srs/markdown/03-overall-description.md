@@ -100,9 +100,16 @@ The descriptions of technical proficiency and frequency of use below are assumpt
 **Priority of user classes.** Faculty are the most important class to satisfy. They enter most of the data, so the accuracy and timeliness of attendance and grades depend on the system being quick and easy for them to use. Administrators come next, because correct accounts and records underlie every other function. Students are the largest class but only read information, so their needs centre on simple login and clear results.
 
 ## Operating Environment
-<!-- Browser support, OS for the server, any hosting assumptions. -->
-
-TODO
+ 
+**Server environment.** The system runs on servers owned and operated by the institution (decision of 24 September 2026, Appendix D). It is packaged as Docker containers, one each for the frontend, the backend and the MySQL database, defined together in a Docker Compose file. The host therefore needs only to support Docker. A Linux server is expected, but the host operating system and hardware are for the institution's IT team to choose (TBD with the IT team). The system must coexist with the other systems the IT team already runs, and must not require changes to them.
+ 
+**Capacity.** The system is designed for about 10,000 users, with a few hundred concurrent users at peak times, such as when faculty mark attendance at the start and end of class periods and when results are published (Appendix D). Hardware sizing is TBD and will be given in the deployment documentation.
+ 
+**Client environment.** Users need only a standard web browser, namely a current version of Chrome, Firefox or Edge. No client software is installed. The interface is designed mainly for desktop and laptop screens. Whether phones and tablets are supported is TBD in Section 3.1.
+ 
+**Network.** Users reach the system over the institution's network. Nearly all users are on or near the campus (Appendix D), so the system does not need to serve a geographically distributed user base or balance load across regions. Whether it is also reachable from off-campus is a matter for the IT team's network arrangements and is not specified here. Browsers communicate with the server over HTTP(S) (Section 3.3).
+ 
+**Other software.** Apart from the software inside its own containers, the system relies on the institution's backup facilities, since the database is backed up regularly (Appendix D). If an email service is used to deliver setup credentials, it must also be reachable from the server. This is TBD in Section 6.3.
 
 <!-- Cite the deployment decision, e.g.: "Per stakeholder discussion,
      DD-Mon-YYYY (Appendix D), the system will be self-hosted via Docker." -->
