@@ -1,4 +1,4 @@
-# Appendix D: Stakeholder Discussion Log
+# Appendix D: Stakeholder Discussion Log {.unnumbered}
  
 This project had no real customer, so a hypothetical stakeholder was used to ground scope and design decisions in the same back-and-forth a real software engineering team would have. The discussions below were conducted over roughly four weeks, and the decisions recorded here are referenced from Sections 1.3, 2.4, 2.5 and 2.6 of this SRS.
  

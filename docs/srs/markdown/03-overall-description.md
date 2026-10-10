@@ -17,7 +17,6 @@ TODO
 
 ## User Classes and Characteristics
 <!-- e.g. Admin, Teacher, Student - what can each do, how tech-savvy are they assumed to be? -->
-## User Classes and Characteristics
 
 The Student Record System has three user classes: Admin, Teacher and Student. Every account holds exactly one of these roles, and access to functions and records depends on that role (Section 5.6). Accounts are created only by an Admin (Section 5.1), so a person cannot register themselves into any user class. The detailed permissions of each class are specified in Section 5.6 and are not repeated here.
 
