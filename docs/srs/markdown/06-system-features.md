@@ -72,7 +72,7 @@ The Administrator also selects the role (Student or Faculty). Field lengths, dat
  
 ### Description and Priority
  
-**Description.** Edit Records lets an authorised user modify an existing student record after it has been created through onboarding (Section 5.1): personal and contact details, programme and section, and enrolment status. Records are never deleted. A student who leaves is marked Inactive instead, so that historical attendance and grades remain intact. Every edit is written to an audit trail. Corrections to attendance entries are covered in Section 5.3, and amendments to grades in Section 5.4.
+**Description.** Edit Records lets an authorised user modify an existing student record after it has been created through onboarding (Section 5.1): personal and contact details, programme and section, and account status. Records are never deleted. A student who leaves is set to Inactive instead, which blocks their login while their record, attendance and grades are retained and remain viewable by Administrators. Every edit is written to an audit trail. Corrections to attendance entries are covered in Section 5.3, and amendments to grades in Section 5.4.
  
 **Priority:** High. Attendance, grading and retrieval all depend on the accuracy of the student record, so uncorrected errors spread to every other feature.
  
@@ -88,7 +88,7 @@ The Administrator also selects the role (Student or Faculty). Field lengths, dat
 | Email | Yes | Must remain unique. |
 | Phone number, address | Yes | |
 | Programme, section | Yes | |
-| Enrolment status | Yes | Active or Inactive. Changing it requires confirmation. |
+| Account status | Yes | Active or Inactive. Setting it to Inactive deactivates the account (login is blocked) and requires confirmation. |
  
 Field lengths, data types, mandatory status and the final field list are defined in Appendix B.
  
@@ -106,22 +106,22 @@ Field lengths, data types, mandatory status and the final field list are defined
 | SR-2 | Administrator submits valid changes to one or more fields. | Role check passes; every field valid; unique fields remain unique; record unchanged by anyone else since it was opened. | All changes saved together; audit entry written; updated record displayed as confirmation. |
 | SR-3 | Administrator submits an invalid value (for example a malformed email). | Field validation fails. | Nothing saved; message shown beside each invalid field; other entered values retained. |
 | SR-4 | Administrator submits changes to a record that another user saved after it was opened. | Version check finds the record has changed. | Update rejected; user told the record has changed; latest values displayed so the edit can be re-applied. |
-| SR-5 | Administrator sets a student's status to Inactive. | Confirmation required and given. | Record retained; student excluded from new attendance and grade entry; change logged. |
-| SR-6 | A Faculty or Student attempts to edit a student record. | Role check fails. | Access denied; no record data disclosed; attempt logged. |
+| SR-5 | Administrator sets a student's account status to Inactive. | Confirmation required and given. | Account deactivated: login blocked and authenticated sessions invalidated; record retained and viewable by Administrators; student excluded from new attendance and grade entry; change logged. |
+| SR-6 | A Faculty member or Student attempts to edit a student record. | Role check fails. | Access denied; no record data disclosed; attempt logged. |
  
 ### Functional Requirements
  
 - **REQ-REC-001:** The system shall allow only users with the Administrator role to edit student records.
-- **REQ-REC-002:** The system shall allow the following fields to be edited: name, email, phone number, address, programme, section and enrolment status (full field list in Appendix B).
+- **REQ-REC-002:** The system shall allow the following fields to be edited: name, email, phone number, address, programme, section and account status (full field list in Appendix B).
 - **REQ-REC-003:** The system shall not allow the student's SRN or any system-generated identifier to be changed.
 - **REQ-REC-004:** The system shall validate every submitted field against its type, length, format and mandatory status as defined in Appendix B, and shall reject invalid input with a message that names the field and the problem.
 - **REQ-REC-005:** The system shall reject an edit that would make a unique field (such as email) duplicate that of another student record, and shall name the field in conflict.
 - **REQ-REC-006:** The system shall apply all changes in a single submission together or not at all, leaving the record exactly as it was and showing an error message if saving fails for any reason.
 - **REQ-REC-007:** The system shall detect when a record has been modified by someone else since the user opened it, shall reject the stale update, and shall display the current values.
 - **REQ-REC-008:** The system shall write an audit entry for every successful edit containing the user, the date and time, the field changed, and its old and new values, and shall provide no means to modify or delete audit entries.
-- **REQ-REC-009:** The system shall not permit a student record to be permanently deleted through the application; removing a student from active use shall be done by setting the enrolment status to Inactive, after the user confirms the action.
-- **REQ-REC-010:** The system shall retain Inactive students' records, attendance and grades, shall keep them retrievable by Administrators, and shall exclude them from new attendance and grade entry.
-- **REQ-REC-011:** The system shall allow an Administrator to reactivate an Inactive student, and shall log the change.
+- **REQ-REC-009:** The system shall not permit a student record to be permanently deleted through the application; removing a student from active use shall be done by setting the account status to Inactive, which deactivates the account as specified in REQ-RBAC-018 and REQ-RBAC-019, after the Administrator confirms the action.
+- **REQ-REC-010:** The system shall retain Inactive students' records, attendance and grades in full, shall keep them viewable and retrievable by Administrators, and shall exclude the students from new attendance and grade entry.
+- **REQ-REC-011:** The system shall allow an Administrator to reactivate an Inactive student, restoring the student's ability to log in, and shall log the change.
 - **REQ-REC-012:** The system shall deny any edit attempt by an unauthorised user without disclosing record contents, and shall log the attempt with the user and time.
 - **REQ-REC-013:** The system shall complete a record edit within the response-time target defined in Section 6.1.
 
@@ -220,62 +220,60 @@ TODO
 - REQ-RET-2:
 
 ## Role-Based Access
-
+ 
 ### Description and Priority
-
-**Description.** Role-Based Access Control (RBAC) decides which functions and records each authenticated user may use. Every account has exactly one role: Admin, Teacher or Student. The role is assigned at account creation (Section 5.1), and only an Admin can change it. Permissions are enforced in both the frontend and the backend, and the backend is the authoritative enforcement layer. Anything not explicitly permitted to a role is denied. Authentication (Section 5.1 and Section 6.3) establishes who the user is, and authorization (this section) decides what that user may do.
-
-**Priority:** High. Features 5.2 to 5.5 read and modify student data and depend on correct authorization.
-
+ 
+**Description.** Role-Based Access Control (RBAC) decides which functions and records each authenticated user may use. Every account has exactly one role: Administrator, Faculty or Student. The role is assigned at account creation (Section 5.1), and only an Administrator can change it, and only between Student and Faculty. Administrator accounts are pre-seeded only (Section 5.1), so the Administrator role can neither be assigned nor removed through the application. Some permissions also depend on a user's relationship to a course, such as being its anchor faculty (Section 5.4). Permissions are enforced in both the frontend and the backend, and the backend is the authoritative enforcement layer. Anything not explicitly permitted to a role is denied. Authentication (Section 5.1 and Section 6.3) establishes who the user is, and authorisation (this section) decides what that user may do.
+ 
+**Priority:** High. Features 5.2 to 5.5 read and modify student data and depend on correct authorisation.
+ 
 **Roles and permissions.**
-
+ 
 | Role | Permitted | Scope boundary | Not permitted |
 |---|---|---|---|
-| Admin | Create, update, deactivate Student and Teacher accounts; assign and change roles; view and manage student records, attendance and grades; view all Teacher and Student records | All relevant records | None defined in this version |
-| Teacher | View assigned students; mark and edit attendance and enter and edit grades for assigned students; view academic records of assigned students | Assigned students only | Students outside the assignment; account and role management |
-| Student | View own profile, attendance, grades and academic records | Own records only | Other students' records; modifying own grades or attendance |
-
+| Administrator | Create, update and deactivate Student and Faculty accounts; change roles between Student and Faculty; view and manage student records (Section 5.2); view all attendance and grades, and amend attendance as allowed by Section 5.3; designate and reassign the anchor faculty of each course (Section 5.4); view all Faculty and Student records | All relevant records | Create, alter or delete rubrics; enter or amend marks |
+| Faculty | View students enrolled in courses they teach; mark and edit attendance and enter and edit marks for those students; view the academic records of those students; as the anchor faculty of a course, also create and alter its rubric, publish its grades and amend published marks (Section 5.4) | Courses they teach, and the students enrolled in them | Students outside those courses; account and role management; editing student records; changing the rubric of a course for which they are not the anchor faculty |
+| Student | View own profile, attendance, published grades and academic records | Own records only | Other students' records; modifying own grades or attendance |
+ 
 **Assumptions and dependencies.**
 - Attendance rules (Section 5.3) and grading rules (Section 5.4) apply in addition to RBAC.
-- Session/token mechanism, audit-log retention and who may view the audit log are defined in Section 6.3 (TBD).
-- How a Teacher is assigned to a Student is TBD. RBAC only requires that the assignment exists.
-- TBD in this version: whether an Admin may deactivate their own or the last remaining Admin account, and how records and assignments are handled when an account's role changes.
+- The authenticated session mechanism, audit-trail retention and who may view the audit trail are defined in Section 6.3 (TBD).
+- A Faculty member's scope is determined by the courses they teach and the students enrolled in them. How courses, teaching assignments and enrolments are created is TBD (see Section 5.4). RBAC only requires that they exist.
+- TBD in this version: whether an Administrator may deactivate their own or the last remaining Administrator account (Administrator accounts cannot be created through the application, so this could lock everyone out); and how records and teaching assignments are handled when an account's role changes between Student and Faculty.
 
 ### Stimulus/Response Sequences
-
+ 
 | # | Stimulus (trigger) | System validation | System response |
 |---|---|---|---|
-| SR-1 | Admin requests an Admin-permitted function (e.g. view any record, edit grades, deactivate an account). | Session valid; account Active; role is Admin. | Request processed and result shown. |
-| SR-2 | Teacher requests an assigned student's record or attendance/grade function. | Session valid; role is Teacher; student is assigned to this Teacher. | Request processed, subject to Sections 5.3 and 5.4. |
-| SR-3 | Teacher requests a student who is not assigned to them. | Student not in this Teacher's assignment. | "Access Denied/Unauthorized"; no data returned; attempt logged. |
-| SR-4 | Student requests their own profile, attendance, grades or academic records. | Session valid; role is Student; record belongs to this Student. | Record displayed read-only. |
+| SR-1 | Administrator requests an Administrator-permitted function (e.g. view any record, designate an anchor faculty, deactivate an account). | Authenticated session valid; account Active; role is Administrator. | Request processed and result shown. |
+| SR-2 | Faculty member requests the record, or an attendance or grade function, for a student enrolled in a course they teach. | Authenticated session valid; role is Faculty; student is enrolled in a course taught by this Faculty member. | Request processed, subject to Sections 5.3 and 5.4. |
+| SR-3 | Faculty member requests a student who is not enrolled in any course they teach. | Student not enrolled in a course taught by this Faculty member. | "Access Denied/Unauthorized"; no data returned; attempt logged. |
+| SR-4 | Student requests their own profile, attendance, grades or academic records. | Authenticated session valid; role is Student; record belongs to this Student. | Record displayed read-only. |
 | SR-5 | Student requests another student's record, or tries to modify their own grades or attendance. | Record not owned, or modification not permitted for Student. | "Access Denied/Unauthorized"; data unchanged; attempt logged. |
-| SR-6 | Any user requests a function not permitted for their role (e.g. Teacher changes a role). | Function not in the role's permission set. | "Access Denied/Unauthorized"; no change; attempt logged. |
-| SR-7 | Admin changes a user's role. | Requester is Admin; account exists; new role is valid. | Role updated and effective immediately; change recorded; confirmation shown. |
-| SR-8 | Deactivated user tries to log in or uses an existing session. | Account status is Deactivated. | Request rejected; no data returned; no new session created. |
-| SR-9 | Unauthenticated user, or user with an expired/invalid session, requests a protected function. | Authentication check fails. | Request rejected; user directed to log in; no data returned. |
-
+| SR-6 | Any user requests a function not permitted for their role (e.g. Faculty member changes a role). | Function not in the role's permission set. | "Access Denied/Unauthorized"; no change; attempt logged. |
+| SR-7 | Administrator changes a user's role. | Requester is Administrator; account exists; account is not an Administrator account; new role is Student or Faculty. | Role updated and effective immediately; change recorded; confirmation shown. A request involving the Administrator role is rejected with an error message. |
+| SR-8 | Inactive user tries to log in or uses an existing authenticated session. | Account status is Inactive. | Request rejected; no data returned; no new authenticated session created. |
+| SR-9 | Unauthenticated user, or user with an expired/invalid authenticated session, requests a protected function. | Authentication check fails. | Request rejected; user directed to log in; no data returned. |
+ 
 ### Functional Requirements
-
-- **REQ-RBAC-001:** The system shall support exactly three roles (Admin, Teacher and Student) and shall associate every account with exactly one role at all times.
+ 
+- **REQ-RBAC-001:** The system shall support exactly three roles (Administrator, Faculty and Student) and shall associate every account with exactly one role at all times.
 - **REQ-RBAC-002:** The system shall deny any function or record access that is not explicitly permitted to the requesting user's role.
-- **REQ-RBAC-003:** The backend shall verify authentication and authorization (role and record scope) on every protected request before processing it, regardless of any frontend check.
+- **REQ-RBAC-003:** The backend shall verify authentication and authorisation (role and record scope) on every protected request before processing it, regardless of any frontend check.
 - **REQ-RBAC-004:** The frontend shall display only the functions permitted to the logged-in user's role.
 - **REQ-RBAC-005:** The system shall associate the authenticated user's role with the authenticated session, check it on every protected request, and not accept a client-supplied role, identity or ownership claim in its place.
-- **REQ-RBAC-006:** The system shall deny a protected request whose session is missing, expired, invalid or inconsistent with the stored account, and for an unauthenticated user shall direct the user to log in without returning protected data.
-- **REQ-RBAC-007:** The system shall allow an Admin to create, update and deactivate Student and Teacher accounts, and to assign and change roles.
-- **REQ-RBAC-008:** The system shall allow an Admin to view and manage the records, attendance and grades of all students (subject to Sections 5.3 and 5.4) and to view all Teacher records.
-- **REQ-RBAC-009:** The system shall allow a Teacher to view the list of students assigned to them, to mark and edit attendance and enter and edit grades for those students (subject to Sections 5.3 and 5.4), and to view those students' relevant academic records.
-- **REQ-RBAC-010:** The system shall deny a Teacher any read or write access to a student who is not assigned to that Teacher, and shall evaluate the assignment on every request so a change takes effect on the next request (assignment mechanism TBD).
-- **REQ-RBAC-011:** The system shall deny a Teacher the creation, update and deactivation of accounts and the assignment or change of roles.
-- **REQ-RBAC-012:** The system shall allow a Student to view their own profile, attendance, grades and academic records.
-- **REQ-RBAC-013:** The system shall deny a Student any access to another student's records, any modification of their own grades or attendance, and any Teacher or Admin function.
-- **REQ-RBAC-014:** When a request is denied for lack of authorization, the system shall return a clear "Access Denied/Unauthorized" message, process no part of the request, leave data unchanged, and give the same response for a nonexistent record as for an unauthorized one.
-- **REQ-RBAC-015:** When an authorization check cannot be completed because of an internal error, the system shall deny the request and show a generic error message that exposes no internal details.
-- **REQ-RBAC-016:** The system shall allow only an Admin to assign or change a role, shall accept only Admin, Teacher or Student as the new role, and shall reject a role change for a nonexistent account with an error message.
-- **REQ-RBAC-017:** The system shall apply a role change immediately, so that every later protected request (including from existing sessions) is authorized against the new role, shall keep exactly one role on the account, and shall record the affected account, previous role, new role, Admin and time.
-- **REQ-RBAC-018:** The system shall allow only an Admin to deactivate an account, and shall invalidate all active sessions of that account immediately.
-- **REQ-RBAC-019:** The system shall reject login by a deactivated account without creating a session, and shall deny every protected request made with a session of a deactivated account.
-- **REQ-RBAC-020:** The system shall log every denied protected request and every failed authentication or session validation on a protected request (recording time, user identity and role if known, requested function or record, and outcome), shall not record passwords, hashes or session secrets in the log, and shall allow no role to modify or delete log entries through application functions.
-- **REQ-RBAC-046:** The system shall not record passwords, password hashes or session secrets in the audit log.
-- **REQ-RBAC-047:** Audit-log retention period and which roles may view the log are TBD and defined in Section 6.3.
+- **REQ-RBAC-006:** The system shall deny a protected request whose authenticated session is missing, expired, invalid or inconsistent with the stored account, and for an unauthenticated user shall direct the user to log in without returning protected data.
+- **REQ-RBAC-007:** The system shall allow an Administrator to create, update and deactivate Student and Faculty accounts, and to change roles between Student and Faculty (REQ-RBAC-016).
+- **REQ-RBAC-008:** The system shall allow an Administrator to view and manage the records of all students (Section 5.2), to view the attendance and grades of all students and amend attendance as allowed by Section 5.3, to designate and reassign the anchor faculty of a course (Section 5.4), and to view all Faculty records, and shall not allow an Administrator to create, alter or delete rubrics or to enter or amend marks.
+- **REQ-RBAC-009:** The system shall allow a Faculty member to view the students enrolled in the courses they teach, to mark and edit attendance and enter and edit marks for those students (subject to Sections 5.3 and 5.4), and to view those students' relevant academic records.
+- **REQ-RBAC-010:** The system shall deny a Faculty member any read or write access to a student who is not enrolled in a course that the Faculty member teaches, and shall evaluate this on every request so that a change takes effect on the next request (how teaching assignments and enrolments are created is TBD).
+- **REQ-RBAC-011:** The system shall deny a Faculty member the creation, update and deactivation of accounts, the assignment or change of roles, and the editing of student records.
+- **REQ-RBAC-012:** The system shall allow a Student to view their own profile, attendance, published grades and academic records.
+- **REQ-RBAC-013:** The system shall deny a Student any access to another student's records, any modification of their own grades or attendance, and any Faculty or Administrator function.
+- **REQ-RBAC-014:** When a request is denied for lack of authorisation, the system shall return a clear "Access Denied/Unauthorized" message, process no part of the request, leave data unchanged, and give the same response for a nonexistent record as for an unauthorised one.
+- **REQ-RBAC-015:** When an authorisation check cannot be completed because of an internal error, the system shall deny the request and show a generic error message that exposes no internal details.
+- **REQ-RBAC-016:** The system shall allow only an Administrator to change an account's role, shall accept only Student or Faculty as the new role, shall not allow any account to be given the Administrator role or an Administrator account's role to be changed (Administrator accounts are pre-seeded only), and shall reject a role change for a nonexistent account with an error message.
+- **REQ-RBAC-017:** The system shall apply a role change immediately, so that every later protected request (including from existing authenticated sessions) is authorised against the new role, shall keep exactly one role on the account, and shall record the affected account, previous role, new role, Administrator and time.
+- **REQ-RBAC-018:** The system shall allow only an Administrator to deactivate or reactivate an account, shall invalidate all active authenticated sessions of that account immediately on deactivation, and shall retain all details of the account and keep them viewable by Administrators.
+- **REQ-RBAC-019:** The system shall reject login by an Inactive account without creating an authenticated session, and shall deny every protected request made with an authenticated session of an Inactive account.
+- **REQ-RBAC-020:** The system shall record in the audit trail every denied protected request and every failed authentication or session validation on a protected request (recording time, user identity and role if known, requested function or record, and outcome), shall not record passwords, hashes or authenticated-session secrets in it, and shall allow no role to modify or delete audit-trail entries through application functions.
