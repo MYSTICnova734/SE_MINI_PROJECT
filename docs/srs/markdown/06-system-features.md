@@ -70,16 +70,61 @@ The Admin also selects the role (Student or Teacher). Field lengths, data types 
 - **REQ-ONB-020:** The system shall create an account atomically, leaving no partial account if any step fails, and shall show a generic error message that exposes no internal details when an unexpected error occurs.
 
 ## Edit Records
-
+ 
 ### Description and Priority
-TODO
+ 
+**Description.** Edit Records lets an authorised user modify an existing student record after it has been created through onboarding (Section 5.1): personal and contact details, programme and section, and enrolment status. Records are never deleted. A student who leaves is marked Inactive instead, so that historical attendance and grades remain intact. Every edit is written to an audit trail. Corrections to attendance entries are covered in Section 5.3, and amendments to grades in Section 5.4.
+ 
+**Priority:** High. Attendance, grading and retrieval all depend on the accuracy of the student record, so uncorrected errors spread to every other feature.
+ 
+**Preconditions.**
+- The student record exists (created through Section 5.1).
+- The Administrator performing the edit is authenticated.
+**Inputs.**
+ 
+| Field | Editable | Notes |
+|---|---|---|
+| SRN and system-generated identifiers | No | Fixed once the record is created. |
+| Name | Yes | |
+| Email | Yes | Must remain unique. |
+| Phone number, address | Yes | |
+| Programme, section | Yes | |
+| Enrolment status | Yes | Active or Inactive. Changing it requires confirmation. |
+ 
+Field lengths, data types, mandatory status and the final field list are defined in Appendix B.
+ 
+**Assumptions and dependencies.**
+- Only Administrators may edit student records. What each role may do is defined in Section 5.6.
+- The Administrator finds the record to edit using retrieval, defined in Section 5.5.
+- The response-time target is defined in Section 6.1.
+- Email comparisons ignore letter case and leading/trailing whitespace, as in Section 5.1.
 
 ### Stimulus/Response Sequences
-TODO
-
+ 
+| # | Stimulus (trigger) | System validation | System response |
+|---|---|---|---|
+| SR-1 | Administrator selects "Edit" on a student record found through retrieval. | Administrator authenticated; record exists. | Record displayed in an editable form showing the current values. |
+| SR-2 | Administrator submits valid changes to one or more fields. | Role check passes; every field valid; unique fields remain unique; record unchanged by anyone else since it was opened. | All changes saved together; audit entry written; updated record displayed as confirmation. |
+| SR-3 | Administrator submits an invalid value (for example a malformed email). | Field validation fails. | Nothing saved; message shown beside each invalid field; other entered values retained. |
+| SR-4 | Administrator submits changes to a record that another user saved after it was opened. | Version check finds the record has changed. | Update rejected; user told the record has changed; latest values displayed so the edit can be re-applied. |
+| SR-5 | Administrator sets a student's status to Inactive. | Confirmation required and given. | Record retained; student excluded from new attendance and grade entry; change logged. |
+| SR-6 | A Teacher or Student attempts to edit a student record. | Role check fails. | Access denied; no record data disclosed; attempt logged. |
+ 
 ### Functional Requirements
-- REQ-REC-1:
-- REQ-REC-2:
+ 
+- **REQ-REC-001:** The system shall allow only users with the Administrator role to edit student records.
+- **REQ-REC-002:** The system shall allow the following fields to be edited: name, email, phone number, address, programme, section and enrolment status (full field list in Appendix B).
+- **REQ-REC-003:** The system shall not allow the student's SRN or any system-generated identifier to be changed.
+- **REQ-REC-004:** The system shall validate every submitted field against its type, length, format and mandatory status as defined in Appendix B, and shall reject invalid input with a message that names the field and the problem.
+- **REQ-REC-005:** The system shall reject an edit that would make a unique field (such as email) duplicate that of another student record, and shall name the field in conflict.
+- **REQ-REC-006:** The system shall apply all changes in a single submission together or not at all, leaving the record exactly as it was and showing an error message if saving fails for any reason.
+- **REQ-REC-007:** The system shall detect when a record has been modified by someone else since the user opened it, shall reject the stale update, and shall display the current values.
+- **REQ-REC-008:** The system shall write an audit entry for every successful edit containing the user, the date and time, the field changed, and its old and new values, and shall provide no means to modify or delete audit entries.
+- **REQ-REC-009:** The system shall not permit a student record to be permanently deleted through the application; removing a student from active use shall be done by setting the enrolment status to Inactive, after the user confirms the action.
+- **REQ-REC-010:** The system shall retain Inactive students' records, attendance and grades, shall keep them retrievable by Administrators, and shall exclude them from new attendance and grade entry.
+- **REQ-REC-011:** The system shall allow an Administrator to reactivate an Inactive student, and shall log the change.
+- **REQ-REC-012:** The system shall deny any edit attempt by an unauthorised user without disclosing record contents, and shall log the attempt with the user and time.
+- **REQ-REC-013:** The system shall complete a record edit within the response-time target defined in Section 6.1.
 
 ## Mark Attendance (with constraints)
 
