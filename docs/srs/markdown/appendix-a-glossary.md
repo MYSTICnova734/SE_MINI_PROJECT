@@ -76,11 +76,14 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | Term | Definition |
 |------------|------------------------------------------------|
 | API | Application Programming Interface: the set of requests through which the frontend communicates with the backend. |
+| Anti-Forgery Token | A secret value sent with each state-changing request, so that the backend can reject requests forged by another website. Also known as a CSRF token. |
 | Atomic Operation | An operation that either completes in full or has no effect at all, leaving no partial changes. |
 | Authentication | Verifying that a user is who they claim to be, by means of their email address and password. |
 | Authenticated Session | The period after a successful login during which the system accepts a user's requests. This is distinct from a class session (A.4). The mechanism is defined in Section 6.3. |
 | Authorisation | Deciding whether an authenticated user is permitted to perform a particular action. |
 | Backend | The server-side application, built with Flask, that enforces access control, validation and business rules and is the only component that accesses the database. |
+| bcrypt | The password-hashing algorithm used by the system (Section 6.3). |
+| Bound Parameter | A value passed to the database separately from the text of a query, so that user input is never interpreted as part of the query. This prevents SQL injection. |
 | Cloud Deployment | Running the system on a third-party provider's infrastructure (for example AWS, GCP, Azure or Firebase). Considered and not chosen (Appendix D). |
 | Docker | A tool that packages an application and its dependencies into containers so that it runs the same way on any server. |
 | Flask | The Python web framework used to build the backend. |
@@ -93,13 +96,16 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | REST API | An API in which the frontend requests data and actions from the backend over HTTP using standard methods. |
 | Self-hosted Deployment | Running the system on servers owned and operated by the institution. This is the deployment model chosen for the system (Appendix D). |
 | Serverless | A cloud model in which code runs as short-lived functions without a continuously running server. Considered and not chosen (Appendix D). |
+| Session Identifier | An opaque random value given to the browser to refer to a user's authenticated session. It contains no role or personal data. |
+| Session Store | The backend's server-side storage of authenticated session state. |
+| Static Code Analysis | Automated inspection of source code for defects and vulnerabilities, run in the CI pipeline. |
 
 ## A.7 Project and Document Terms {.unnumbered}
 
 | Term | Definition |
 |------------|------------------------------------------------|
 | Hypothetical Stakeholder | The fictional institutional representative used in place of a real customer to ground scope and design decisions. See Appendix D. |
-| Requirement ID | The unique tag given to each functional requirement, in the form REQ-XXX-nnn. The prefixes are ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), RET (retrieval) and RBAC (role-based access). |
+| Requirement ID | The unique tag given to each functional requirement, in the form REQ-XXX-nnn. The prefixes are ONB (onboarding), REC (edit records), ATT (attendance), GRD (grades), RET (retrieval), RBAC (role-based access) and SEC (security, Section 6.3). |
 | Stimulus/Response Sequence (SR) | A numbered pairing of a user action (stimulus) and the system's behaviour in response, used to describe each feature. |
 | TBD | To be determined: information not yet available at the time of writing. |
 
@@ -112,5 +118,6 @@ This glossary defines the terms and abbreviations used in this SRS. Terms are gr
 | HTTP(S) | Hypertext Transfer Protocol (Secure) |
 | JSON | JavaScript Object Notation |
 | NFR | Nonfunctional Requirement |
+| SQL | Structured Query Language |
 | SRS | Software Requirements Specification |
 | UI | User Interface |
