@@ -36,23 +36,47 @@ This project had no real customer, so a hypothetical stakeholder was used to gro
 - The grading rubric will be configurable per course by faculty rather than hardcoded (see Section 5.4).
 - Every change to a record, attendance entry or grade must be traceable to a user and a timestamp.
 
-## Discussion 2 — Deployment & Constraints (DATE)
-
-**Topics covered:** self-hosted vs. cloud, budget, expected concurrent users,
-data sensitivity / retention.
-
-**Q:** Should this be cloud-hosted or self-hosted?
-**A:** TODO — record the reasoning, not just the conclusion.
-
-**Q:** What's the expected scale (students, concurrent users)?
-**A:** TODO
-
-**Q:** Any data privacy or retention constraints?
-**A:** TODO
-
+## Discussion 2: Deployment and Constraints (Thursday, 24 September 2026)
+ 
+**Topics covered:** cloud versus self-hosted deployment, cost, expected load, data sensitivity, technology stack.
+ 
+**Q:** Should the system be hosted on a cloud provider such as AWS, GCP, Azure or Firebase, or run on the institution's own infrastructure?
+ 
+**A:** We initially leaned towards the cloud because it avoids buying hardware and gives a public URL immediately. The team walked through the trade-offs, and several points changed our view.
+ 
+First, cost. A cloud deployment carries a recurring bill for compute, managed database, storage and backups that grows with usage and never ends. The institution already owns server capacity and a data centre room with spare capacity, so self-hosting is a one-time setup effort with no ongoing subscription.
+ 
+Second, maintenance. The institution's existing IT team already runs servers and databases for other systems, so operating one more containerised application is well within their abilities and does not require hiring or training.
+ 
+Third, the main advantage of the cloud does not apply here. Cloud platforms are most valuable for load balancing and low latency across large geographic areas, but nearly all users of this system are students and staff who regularly visit the campus and can reach a server on the campus network. There is no geographically distributed user base to serve.
+ 
+**Q:** If cloud had been chosen, would a conventional backend or a serverless framework have been preferred?
+ 
+**A:** Serverless was discussed and set aside even before the cost argument. The system depends on session-based authentication, role checks on every request and validation of attendance rules, all of which are simpler to build, test and reason about in a conventional long-running backend. Cold starts would also work against the response-time target below.
+ 
+**Q:** What scale should the system be designed for?
+ 
+**A:** About 10,000 users in total. Most of the time only a small fraction will be active, but there are predictable peaks: faculty marking attendance at the start and end of class periods, and students checking results when grades are published. The system should handle a few hundred concurrent users comfortably during these peaks.
+ 
+**Q:** What are the expectations on response time?
+ 
+**A:** Routine actions such as marking attendance or looking up a student should feel instant. A target of under two seconds for record retrieval under normal load was agreed.
+ 
+**Q:** Are there data privacy or retention constraints?
+ 
+**A:** Student records are personal data and must be protected accordingly, including compliance with India's Digital Personal Data Protection Act, 2023. Access must be limited by role, passwords must never be stored in plain text, and the database must be backed up regularly. Records are to be retained for the duration of a student's enrolment and for a period afterwards, as set by the university's records policy.
+ 
+**Q:** Which technology stack should be used?
+ 
+**A:** The institution has no preference, provided it is open source and maintainable by the existing IT team. The team proposed React for the frontend, Flask for the backend and a relational database, since student, course, attendance and grade data is inherently relational. MySQL will be used for deployment, with SQLite acceptable for local development and testing.
+ 
 **Decisions made:**
-- Deployment model: TODO
-- Tech stack: TODO
+ 
+- Deployment model: self-hosted on the institution's own infrastructure, packaged with Docker so the IT team can deploy and update it consistently. Cloud and serverless options were considered and rejected for cost, operational simplicity and lack of a geographically distributed user base.
+- Technology stack: React (frontend), Flask (backend), MySQL (production database), SQLite (development and testing).
+- Design capacity: approximately 10,000 total users, with a few hundred concurrent users at peak.
+- Performance target: record retrieval in under 2 seconds under normal load.
+- Security: hashed passwords, role-based access enforced on the server, audit trail of changes, regular database backups.
 
 ## Discussion 3 — Sign-off (DATE)
 
