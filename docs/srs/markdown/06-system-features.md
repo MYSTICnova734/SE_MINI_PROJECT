@@ -140,17 +140,73 @@ TODO
 - REQ-ATT-2:
 
 ## Mark Grades (with rubric)
-
+ 
 ### Description and Priority
-TODO
+ 
+**Description.** Mark Grades lets faculty record marks for students against a grading rubric, and lets students see their published results. A rubric is a set of weighted components (for example assignments, internal tests and a final exam). It is specific to each course rather than a fixed scheme for the whole institution. Each course has one **anchor faculty**: a faculty member teaching that course, designated by an Administrator. Only the anchor faculty can create or alter the course's rubric, which keeps the grading scheme consistent for every student in the course. Other faculty teaching the course can view the rubric and enter marks against it but cannot change it. Administrators can reassign the anchor faculty but cannot edit rubrics themselves. Marks are entered as drafts and become visible to students only when the anchor faculty publishes them. Changes after publication are restricted and logged.
+ 
+**Priority:** High. Grading is one of the system's core purposes, and the rubric rules directly affect the correctness of every student's result.
+ 
+**Preconditions.**
+- The course exists and has at least one faculty member assigned to teach it.
+- The user is authenticated.
+- To enter marks, the course's rubric for that term has been defined, and the students are enrolled in the course.
+**Inputs.**
+ 
+| Data | Provided by | Details |
+|---|---|---|
+| Anchor faculty assignment | Administrator | The course, and the faculty member designated as its anchor. |
+| Rubric component | Anchor faculty | Name (unique within the rubric), maximum mark greater than zero, weight greater than zero. |
+| Mark | Faculty teaching the course | Student, rubric component, and a number from 0 to the component's maximum with at most two decimal places. |
+| Amendment reason | Anchor faculty | Free text; required for every change made after publication. |
+ 
+**Assumptions and dependencies.**
+- What each role may do is defined in Section 5.6. Being the anchor faculty is an additional permission that applies to one course only.
+- Courses, terms and the enrolment of students in courses are assumed to exist. How they are created is TBD.
+- Marks and rubric changes are written to the same audit trail used in Section 5.2.
+- The institution's letter-grade bands are TBD (see REQ-GRD-023).
+- The response-time target is defined in Section 6.1.
 
 ### Stimulus/Response Sequences
-TODO
-
+ 
+| # | Stimulus (trigger) | System validation | System response |
+|---|---|---|---|
+| SR-1 | Anchor faculty submits a rubric whose weights total 100%. | User is the course's anchor faculty; component names unique; maximum marks and weights greater than zero; weights total 100%. | Rubric saved; change logged; confirmation displayed. |
+| SR-2 | Anchor faculty submits a rubric whose weights do not total 100%. | Weight total check fails. | Nothing saved; current total displayed so it can be corrected. |
+| SR-3 | A faculty member who is not the course's anchor opens the rubric page, or sends a change request directly. | Anchor check fails for any change. | Rubric displayed read-only with no editing controls; a direct change request is denied and logged. |
+| SR-4 | Faculty member opens the gradebook for a course they teach. | User teaches the course; rubric exists. | Enrolled active students listed, with one column per rubric component. |
+| SR-5 | Faculty member submits valid marks. | Every mark is a number within its component's range; faculty teaches the course; records unchanged since opened. | Marks saved as drafts; each student's weighted total recalculated and displayed. |
+| SR-6 | Faculty member submits a mark that is outside the allowed range or not a number. | Range or number check fails. | Nothing from the submission saved; each invalid entry listed with its student, component and allowed range. |
+| SR-7 | Anchor faculty selects "Publish". | User is the course's anchor faculty; all enrolled active students checked for missing marks. | If marks are missing, the students are listed and confirmation requested. On confirmation, grades become visible to students. |
+| SR-8 | Student opens their results. | Student authenticated; grades published. | Only that student's grades shown, with each component's mark, maximum and weight, and the weighted total. |
+| SR-9 | Anchor faculty corrects a mark after publication. | User is the anchor faculty; written reason supplied. | Mark updated and flagged as amended; old value, new value and reason logged; student sees the updated value. |
+ 
 ### Functional Requirements
-<!-- Decide: fixed-schema rubric vs teacher-configurable rubric - document the decision. -->
-- REQ-GRD-1:
-- REQ-GRD-2:
+ 
+- **REQ-GRD-001:** The system shall allow an Administrator to designate exactly one anchor faculty for each course, who must be a faculty member assigned to teach that course.
+- **REQ-GRD-002:** The system shall allow only the anchor faculty of a course to create, modify or delete that course's rubric, and shall give other faculty of the same course and Administrators read-only access to it.
+- **REQ-GRD-003:** The system shall define a rubric as one or more components, each having a name that is unique within the rubric, a maximum mark greater than zero, and a weight greater than zero.
+- **REQ-GRD-004:** The system shall accept a rubric only if the component weights add up to exactly 100%, and shall otherwise reject it and display the current total.
+- **REQ-GRD-005:** The system shall maintain a separate rubric for each course in each term, and shall allow the anchor faculty to copy a previous term's rubric as the starting point for a new one.
+- **REQ-GRD-006:** The system shall allow the rubric to be modified freely while no marks have been recorded against it; if marks have been recorded but not published, the system shall warn the anchor faculty, require confirmation before saving and recalculate all affected totals; once grades are published, the system shall not allow the rubric to be changed.
+- **REQ-GRD-007:** The system shall record every rubric creation and modification in the audit trail with the user, date and time, and the old and new values.
+- **REQ-GRD-008:** The system shall allow an Administrator to reassign the anchor faculty of a course to another faculty member teaching it, with the change taking effect immediately, removing the previous anchor's rubric rights and being logged.
+- **REQ-GRD-009:** The system shall not allow marks to be entered for a course until its rubric exists.
+- **REQ-GRD-010:** The system shall allow a faculty member to enter and edit marks only for active students enrolled in courses that the faculty member teaches.
+- **REQ-GRD-011:** The system shall accept a mark for a rubric component only if it is a number between 0 and that component's maximum mark inclusive, with at most two decimal places.
+- **REQ-GRD-012:** The system shall reject an invalid mark with a message naming the student, the component and the allowed range, and when several marks are submitted together and any is invalid, shall report all invalid entries and save none of the submission.
+- **REQ-GRD-013:** The system shall distinguish a mark of zero from a mark not yet entered, and shall display a student's total as "Incomplete" until every component has a mark.
+- **REQ-GRD-014:** The system shall calculate each student's weighted total as the sum, over all components, of (mark ÷ maximum mark) × weight, rounded to two decimal places, and shall recalculate it automatically whenever a mark or the rubric changes.
+- **REQ-GRD-015:** The system shall detect and reject a mark update based on stale data, in the same way as REQ-REC-007, and shall display the current value.
+- **REQ-GRD-016:** The system shall record every mark entry and change in the audit trail with the user, date and time, student, component, and old and new values.
+- **REQ-GRD-017:** The system shall deny any attempt by a user to view or change marks for a course they do not teach, without disclosing any marks, and shall log the attempt.
+- **REQ-GRD-018:** The system shall allow only the anchor faculty to publish a course's grades, and if any enrolled active student has missing marks, shall list them and require confirmation before publishing.
+- **REQ-GRD-019:** The system shall make unpublished marks visible only to the faculty teaching the course and to Administrators.
+- **REQ-GRD-020:** The system shall allow a student to view only their own published grades, showing for each component the mark, maximum and weight, together with the weighted total.
+- **REQ-GRD-021:** After publication, the system shall allow only the anchor faculty to amend a mark, shall require a written reason, shall flag the grade as amended, and shall record the old value, new value and reason in the audit trail.
+- **REQ-GRD-022:** The system shall retain the marks of students who later become Inactive.
+- **REQ-GRD-023:** The system shall convert a weighted total to a letter grade according to the institution's grade bands (TBD: the bands have not yet been confirmed and will be added once the grading policy is fixed).
+- **REQ-GRD-024:** The system shall complete a mark entry or retrieval within the response-time target defined in Section 6.1.
 
 ## Retrieval
 
