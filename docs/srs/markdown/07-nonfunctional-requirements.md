@@ -117,6 +117,58 @@ The quality attributes below matter most to the institution and to the developme
 - **REQ-QUA-018:** The system shall continue to meet the response-time targets in Section 6.1 with four years of accumulated data, which is about 20 million attendance records.
 
 ## Business Rules
-<!-- Who can do what under which circumstances - ties directly into RBAC and grading rules. -->
-
-TODO
+ 
+These are the operating principles of the system: who may do what, and under which circumstances. They are not functional requirements in themselves, but each is enforced by the requirements named in the Source column. The final group states the domain rules of the academic setting that the system models.
+ 
+**Accounts and roles**
+ 
+| ID | Rule | Source |
+|------|----------------------------------------------|--------------|
+| BR-001 | Every user holds exactly one role: Administrator, Faculty or Student. | 5.6 |
+| BR-002 | Accounts are created only by an Administrator. There is no self-registration. Administrator accounts are pre-seeded during setup and cannot be created or assigned through the application. | 5.1, 5.6 |
+| BR-003 | Each user sets their own password. No one else, including an Administrator, ever sets or knows it. | 5.1 |
+| BR-004 | Every SRN, Staff ID, Administrator ID and email address is unique across all accounts. | 5.1 |
+| BR-005 | Only an Administrator can change a role, and only between Student and Faculty. | 5.6 |
+| BR-006 | Records are never deleted. A user who leaves is set to Inactive, which blocks their login while their details are retained and remain viewable by Administrators. | 5.2, 5.6 |
+ 
+**Access to records**
+ 
+| ID | Rule | Source |
+|------|----------------------------------------------|--------------|
+| BR-007 | A Faculty member can act only on the courses they teach and the students enrolled in them. | 5.6 |
+| BR-008 | A Student can view only their own profile, attendance, published grades and academic records, and cannot change any of them. | 5.6 |
+| BR-009 | Only an Administrator can edit student records. | 5.2 |
+| BR-010 | Anything not explicitly permitted to a role is denied. | 5.6 |
+ 
+**Attendance**
+ 
+| ID | Rule | Source |
+|------|----------------------------------------------|--------------|
+| BR-011 | Attendance can be marked only for a scheduled class session. | 5.3 |
+| BR-012 | A student cannot be marked present in two overlapping class sessions. | 5.3 |
+| BR-013 | A Faculty member can correct an attendance entry only within the edit window. After it closes, only an Administrator can amend the entry, and the change is logged. | 5.3 |
+ 
+**Grading**
+ 
+| ID | Rule | Source |
+|------|----------------------------------------------|--------------|
+| BR-014 | Each course offering has exactly one anchor faculty, designated by an Administrator from the faculty teaching the course. | 5.4 |
+| BR-015 | Only the anchor faculty can create or alter a course's rubric. Administrators and other faculty cannot. | 5.4 |
+| BR-016 | The weights of a rubric's components add up to exactly 100%, and each mark lies between 0 and its component's maximum mark. | 5.4 |
+| BR-017 | Grades are visible to students only after the anchor faculty publishes them. After publication the rubric is locked, and only the anchor faculty can amend a mark, with a recorded reason. | 5.4 |
+ 
+**Traceability and data protection**
+ 
+| ID | Rule | Source |
+|------|----------------------------------------------|--------------|
+| BR-018 | Every change to a student record, rubric, mark, attendance entry or role is recorded in the audit trail with who made it and when, and audit-trail entries cannot be altered. | 5.2, 5.4, 5.6, 6.3 |
+| BR-019 | Personal data is handled in line with the Digital Personal Data Protection Act, 2023, and is visible only to the roles permitted to see it. | 6.3, 7.2 |
+ 
+**Domain rules**
+ 
+| ID | Rule | Source |
+|------|----------------------------------------------|--------------|
+| BR-020 | A student's weighted total for a course offering is the sum, over all rubric components, of (mark ÷ maximum mark) × weight. | 5.4 |
+| BR-021 | A rubric belongs to a course offering, so the same course can have a different rubric in each term. | 5.4 |
+| BR-022 | Conversion of a weighted total to a letter grade follows the institution's grade bands (TBD, Section 5.4). | 5.4 |
+| BR-023 | A student's attendance and grades belong to a course offering, which is a course in a particular term. | 5.3, 5.4 |
