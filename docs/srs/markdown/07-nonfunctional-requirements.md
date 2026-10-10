@@ -71,9 +71,50 @@ Security requirements for authentication, password protection, session handling,
 - **REQ-SEC-019:** The project's continuous integration shall run static code analysis, and a release shall not be made while high-severity security findings remain unresolved.
 
 ## Software Quality Attributes
-<!-- Pick 2-3 that matter: maintainability, usability, reliability - and be specific. -->
+ 
+The quality attributes below matter most to the institution and to the development team. They are listed in order of importance when two of them conflict:
+ 
+1. **Correctness and data protection.** A wrong grade or a lost record does more harm than a slow page.
+2. **Reliability.** Faculty must be able to rely on the system at the moments they need it, such as the start and end of class periods.
+3. **Usability for Faculty,** who enter most of the data, over usability for occasional users.
+4. **Maintainability and testability,** which the institution's IT team and the course guidelines both require.
+5. **Performance beyond the targets in Section 6.1,** which is the lowest priority once the targets are met.
 
-TODO
+**Correctness**
+ 
+- **REQ-QUA-001:** A release shall pass all of its automated tests and shall have no open defect of high or critical severity.
+
+**Reliability and availability**
+ 
+- **REQ-QUA-002:** The system shall be available at least 99% of the time in each calendar month during the institution's working hours, excluding planned maintenance announced at least 24 hours in advance.
+- **REQ-QUA-003:** A change that the system has confirmed to the user shall not be lost, except through restoring a backup (REQ-SAF-004).
+- **REQ-QUA-004:** If a container stops unexpectedly, the system shall restart it automatically and resume service without manual intervention.
+
+**Usability**
+ 
+- **REQ-QUA-005:** At least 90% of first-time users in usability testing shall be able to set their password and log in for the first time, without assistance, in under 5 minutes.
+- **REQ-QUA-006:** A Faculty member shall be able to mark attendance for a class of up to 60 students in under 2 minutes.
+- **REQ-QUA-007:** Every error message shall say what went wrong and, where possible, how to correct it, and shall expose no internal details (see REQ-RBAC-015).
+- **REQ-QUA-008:** All functions shall be operable using the keyboard alone, and all text shall meet the WCAG 2.1 level AA colour-contrast requirement.
+
+**Maintainability and debuggability**
+ 
+- **REQ-QUA-009:** The software shall be organised in layers that separate request handling, business logic and data access, and each function in Section 5 shall be implemented in its own module.
+- **REQ-QUA-010:** The system shall not hard-code configuration such as database addresses, credentials or email settings. They shall be supplied through environment variables or configuration files.
+- **REQ-QUA-011:** The backend shall log errors with the time, a request identifier, the user identifier and the function involved, so that a failure can be traced without reproducing it. The log shall contain no passwords, session secrets or personal data other than identifiers.
+- **REQ-QUA-012:** Static code analysis shall report no blocker or critical issues at release (see REQ-SEC-019).
+- **REQ-QUA-013:** Every API endpoint shall be documented, with its purpose, inputs, outputs and error responses.
+
+**Testability**
+ 
+- **REQ-QUA-014:** Automated unit tests shall cover at least 80% of backend lines and at least 70% of backend branches, and the coverage shall be reported on every run of the CI pipeline.
+- **REQ-QUA-015:** Every functional requirement in Section 5 shall be traced in Appendix C to at least one test case.
+
+**Portability, extensibility and scalability**
+ 
+- **REQ-QUA-016:** The whole system shall start on any Linux host that has Docker and Docker Compose installed, using one command, with no manual steps other than supplying configuration.
+- **REQ-QUA-017:** A new function shall be addable without changing the existing Section 5 modules, other than registering the new function with the application.
+- **REQ-QUA-018:** The system shall continue to meet the response-time targets in Section 6.1 with four years of accumulated data, which is about 20 million attendance records.
 
 ## Business Rules
 <!-- Who can do what under which circumstances - ties directly into RBAC and grading rules. -->
