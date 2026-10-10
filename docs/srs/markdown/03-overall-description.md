@@ -43,14 +43,23 @@ Users reach the system through a standard web browser. The React frontend presen
 Because deferred features such as fee management and a parent portal are expected to follow, the parts above are kept separate so that new functions can be added without changing the existing ones.
 
 ## Product Functions
-<!-- High-level bullet list of major functions - one line each, detail comes later in Section 5. -->
-
-- Onboarding (student/staff registration)
-- Edit records
-- Mark attendance (with constraints)
-- Mark grades (with rubric)
-- Retrieval / search
-- Role-based access control
+ 
+The system provides the functions below. Each is specified in detail in the Section 5 subsection shown.
+ 
+| Function | Summary | Main users | Section |
+|----------|----------------------------------------------|-----------|-----|
+| Onboarding | Administrators create Student and Faculty accounts. Each new user sets their own password through a secure one-time setup and then logs in with their email address. There is no self-registration. | Administrator | 5.1 |
+| Edit Records | Administrators correct and update student records. Every edit is audited. A student who leaves is set to Inactive, which blocks login but keeps the record, attendance and grades. | Administrator | 5.2 |
+| Mark Attendance | Faculty mark attendance for the class sessions of courses they teach. The system enforces the attendance rules: attendance can be marked only for scheduled sessions, a student cannot be present in two overlapping sessions, and entries can be corrected only within a limited window, after which only an Administrator can amend them. | Faculty, Administrator | 5.3 |
+| Mark Grades | The anchor faculty of each course defines that course's rubric. Faculty teaching the course enter marks against it, and the system calculates each student's weighted total. The anchor faculty publishes the grades, after which students can view their own. Later corrections need a recorded reason. | Faculty, Student | 5.4 |
+| Retrieval | Users search for and view student records, attendance and grades, limited to what their role allows. | Administrator, Faculty, Student | 5.5 |
+| Role-Based Access | Every account has exactly one role: Administrator, Faculty or Student. Anything not explicitly permitted to a role is denied, and the backend enforces this on every request. Administrators can change roles between Student and Faculty and can deactivate or reactivate accounts. | All users | 5.6 |
+ 
+**Capabilities that apply across the functions.**
+ 
+- **Authentication.** Users log in with their registered email address and password. See Sections 5.1 and 6.3.
+- **Audit trail.** Changes to records, rubrics, marks, attendance and roles, and denied requests, are recorded and cannot be altered through the application. See Sections 5.2, 5.4, 5.6 and 6.3.
+- **Performance and security.** Retrieval and updates must meet the response-time target, and student data must be protected in line with the DPDP Act, 2023. See Sections 6.1 and 6.3.
 
 ## User Classes and Characteristics
 <!-- e.g. Admin, Teacher, Student - what can each do, how tech-savvy are they assumed to be? -->
