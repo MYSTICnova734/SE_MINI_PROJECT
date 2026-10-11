@@ -14,6 +14,14 @@ These requirements give the response-time and capacity targets that Sections 5.2
 | Peak load | Up to 300 concurrent authenticated users. |
 | Target met | At least 95% of the requests of that kind complete within the stated time. |
 
+
+**Response time**
+- **REQ-PER-001:** The system shall complete a student search or record retrieval (Section 5.5) within 2 seconds under normal load.
+- **REQ-PER-002:** The system shall complete the saving of a record edit (Section 5.2), of an attendance submission for a class of up to 60 students (Section 5.3), and of a mark entry (Section 5.4) within 2 seconds under normal load. This is the response-time target referred to in REQ-REC-013, REQ-ATT-015 and REQ-GRD-024.
+- **REQ-PER-003:** The system shall complete a login, from submission of the email and password to the start of the authenticated session, within 2 seconds under normal load.
+- **REQ-PER-004:** The system shall complete the publication of a course's grades, including recalculation of the weighted totals of up to 60 students, within 5 seconds under normal load.
+- **REQ-PER-005:** Under peak load, the system shall complete the operations in REQ-PER-001 to REQ-PER-003 within 5 seconds.
+
 ## Safety Requirements
  
 The Student Record System does not control any physical equipment, so it poses no physical safety hazard and no safety certification is required. The harm it could cause is to the institution's data and to the people the data describes: records that are lost or corrupted, grades that are calculated wrongly, or consequential actions taken by mistake. The requirements below guard against these. Protection of personal data from unauthorised access is covered in Section 6.3.
