@@ -1,14 +1,27 @@
 ---
 title: "Software Requirements Specification"
-subtitle: "Jackfruit Phase-1 — Student Record System"
+subtitle: "Academic Management & Record System"
 author:
-  - "Tanmay T A, PES1UG24CS492"
-  - "Uttam B S, PES1UG24CS508"
-  - "Vibha Venkatesh Vasisht, PES1UG24CS526"
-date: \today
+  - "Tanmay T A (PES1UG22CS001)"
+  - "Uttam B S (PES1UG22CS002)"
+  - "Vibha Vasisht (PES1UG22CS003)"
+version: "1.0"
+status: "Approved"
+geometry: "margin=1in"
+documentclass: article
+fontsize: 11pt
+fontfamily: lmodern
 toc: true
 toc-depth: 3
 numbersections: true
-geometry: margin=1in
-fontsize: 11pt
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{hyperref}
+  - \pagestyle{fancy}
+  - \fancyhead[L]{Academic Management System SRS}
+  - \fancyhead[R]{\leftmark}
+  - \fancyfoot[C]{\thepage}
 ---

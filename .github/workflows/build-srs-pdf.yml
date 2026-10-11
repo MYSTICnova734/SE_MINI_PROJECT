@@ -1,8 +1,5 @@
 name: Build SRS PDF
 
-# Runs whenever the SRS Markdown changes on main, rebuilds the PDF,
-# and commits it back to docs/srs/SRS.pdf (overwriting the previous version).
-
 on:
   push:
     branches: [main]
@@ -12,9 +9,6 @@ on:
 permissions:
   contents: write
 
-# Only one build at a time. If more pushes arrive while a build is running,
-# GitHub keeps just the newest waiting run. Since each run checks out the
-# latest main when it starts, that single run picks up every earlier change.
 concurrency:
   group: build-srs-pdf
   cancel-in-progress: false
@@ -27,17 +21,14 @@ jobs:
         with:
           ref: main
 
-      - name: Install pandoc + LaTeX
+      - name: Install pandoc + LaTeX + Graphviz
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-latex-recommended lmodern
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-latex-recommended lmodern graphviz
 
       - name: Build PDF
         run: bash docs/srs/build.sh
 
-      # Commit first, THEN rebase onto whatever landed on main during the build,
-      # then push. (Rebasing before committing fails because the freshly built
-      # PDF is an uncommitted change in the working tree.)
       - name: Commit and push built PDF
         run: |
           git config user.name "github-actions[bot]"

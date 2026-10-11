@@ -1,52 +1,25 @@
-// Source for docs/srs/markdown/images/er-attendance-grading.png
-// Regenerate (from docs/srs/diagrams/) with:
-//   dot -Tpng -Gdpi=200 er-attendance-grading.dot -o ../markdown/images/er-attendance-grading.png
-// Conceptual model only: keys and the most important attributes are shown.
-// Full field layouts are in Appendix B; the final schema is in the design document.
-// Crow's foot notation:  exactly one = ||   zero or one = o|   zero or many = o<   one or many = |<
-// Edges go parent -> child. The tail end (parent) is always "exactly one";
-// the head end (child) shows the child's cardinality.
-digraph er_attendance_grading {
-  rankdir=TB;
-  nodesep=0.3; ranksep=0.6;
-  splines=true;
-  graph [fontname="DejaVu Sans", fontsize=11, pad=0.2];
-  node  [shape=plaintext, fontname="DejaVu Sans", fontsize=10];
-  edge  [fontname="DejaVu Sans", fontsize=9, color="#4a5568", dir=both, arrowtail=teetee];
+digraph EntityRelationship {
+    rankdir=LR;
+    node [shape=rectangle, fontname="Helvetica", fontsize=10, style="filled", fillcolor="#FFFFFF", color="#333333"];
+    edge [fontname="Helvetica", fontsize=9, color="#666666"];
 
-  student [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#dbe7f5"><B>Student</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  srn<BR/>FK  account_id<BR/>name, phone, address<BR/>programme, section</TD></TR></TABLE>>];
+    USER [label="USER\n---\nuser_id (PK)\nrole (Admin/Faculty/Student)\npassword_hash\nneeds_password_reset", fillcolor="#E1F5FE"];
+    PROFILE [label="PROFILE\n---\nprofile_id (PK)\nuser_id (FK)\nfull_name\ncontact_details", fillcolor="#E1F5FE"];
+    COURSE [label="COURSE\n---\ncourse_id (PK)\ncode, title\ncapacity_limit\nassigned_faculty_id (FK)", fillcolor="#E8F5E9"];
+    RUBRIC [label="RUBRIC_COMPONENT\n---\nrubric_id (PK)\ncourse_id (FK)\ncomponent_name\nnormalized_weight", fillcolor="#E8F5E9"];
+    ENROLLMENT [label="ENROLLMENT\n---\nenrollment_id (PK)\nstudent_id (FK)\ncourse_id (FK)", fillcolor="#FFF3E0"];
+    SCHEDULE [label="SCHEDULE_SESSION\n---\nsession_id (PK)\ncourse_id (FK)\nscheduled_start_time\nroom_number", fillcolor="#FFF3E0"];
+    ATTENDANCE [label="ATTENDANCE_RECORD\n---\nattendance_id (PK)\nsession_id (FK)\nstudent_id (FK)\nis_present (Boolean)\nmarked_at_timestamp", fillcolor="#FFEBEE"];
+    GRADE [label="GRADE_RECORD\n---\ngrade_id (PK)\nenrollment_id (FK)\nrubric_id (FK)\nnumeric_score\nstate (Draft/Submitted/UnderReview/Published)", fillcolor="#FFEBEE"];
 
-  offering [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#e4f4e8"><B>Course Offering</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  offering_id<BR/>FK  course_id<BR/>term</TD></TR></TABLE>>];
-
-  session [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#fff1d6"><B>Class Session</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  session_id<BR/>FK  offering_id<BR/>start_time, end_time</TD></TR></TABLE>>];
-
-  attend [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#fff1d6"><B>Attendance Record</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">FK  session_id<BR/>FK  srn<BR/>status</TD></TR></TABLE>>];
-
-  rubric [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#f3e3f5"><B>Rubric</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  rubric_id<BR/>FK  offering_id (unique)<BR/>locked</TD></TR></TABLE>>];
-
-  component [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#f3e3f5"><B>Rubric Component</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  component_id<BR/>FK  rubric_id<BR/>name, max_mark, weight</TD></TR></TABLE>>];
-
-  mark [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
-    <TR><TD BGCOLOR="#f3e3f5"><B>Mark</B></TD></TR>
-    <TR><TD ALIGN="LEFT" BALIGN="LEFT">FK  srn<BR/>FK  component_id<BR/>value, status<BR/>(draft / published / amended)</TD></TR></TABLE>>];
-
-  offering   -> session    [arrowhead=crowodot];  // 1 : 0..*
-  session    -> attend     [arrowhead=crowodot];  // 1 : 0..*
-  student    -> attend     [arrowhead=crowodot];  // 1 : 0..*
-  offering   -> rubric     [arrowhead=teeodot];  // 1 : 0..1
-  rubric     -> component  [arrowhead=crowtee];  // 1 : 1..*
-  component  -> mark       [arrowhead=crowodot];  // 1 : 0..*
-  student    -> mark       [arrowhead=crowodot];  // 1 : 0..*
+    USER -> PROFILE [label="1 : 1"];
+    USER -> COURSE [label="1 : N (Faculty)"];
+    USER -> ENROLLMENT [label="1 : N (Student)"];
+    COURSE -> ENROLLMENT [label="1 : N"];
+    COURSE -> RUBRIC [label="1 : N"];
+    COURSE -> SCHEDULE [label="1 : N"];
+    SCHEDULE -> ATTENDANCE [label="1 : N"];
+    USER -> ATTENDANCE [label="1 : N (Student)"];
+    ENROLLMENT -> GRADE [label="1 : N"];
+    RUBRIC -> GRADE [label="1 : N"];
 }

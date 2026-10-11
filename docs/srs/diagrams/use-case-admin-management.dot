@@ -1,0 +1,34 @@
+digraph AdminManagementUseCase {
+    rankdir=LR;
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Actor
+    node [shape=actor, style=solid];
+    Admin [label="Administrator"];
+
+    // System Boundary
+    subgraph cluster_system {
+        label="System Administration Module";
+        style="dashed";
+        color="#2E7D32";
+        node [shape=ellipse, style=filled, fillcolor="#F8F9FA", color="#333333"];
+
+        UC_ProvisionUser [label="Provision User Account\n(Display Credentials)"];
+        UC_ManageStatus [label="Manage Account Status / Roles"];
+        UC_CreateCourse [label="Register Course & Rubrics"];
+        UC_CreateSchedule [label="Upload Class Schedules"];
+        UC_OverrideAttendance [label="Override Locked Attendance\n(> 48h Window)"];
+        UC_PublishGrades [label="Publish Final Grades"];
+        UC_ExportMetrics [label="Export Institution Metrics"];
+    }
+
+    // Admin Connections
+    Admin -> UC_ProvisionUser;
+    Admin -> UC_ManageStatus;
+    Admin -> UC_CreateCourse;
+    Admin -> UC_CreateSchedule;
+    Admin -> UC_OverrideAttendance;
+    Admin -> UC_PublishGrades;
+    Admin -> UC_ExportMetrics;
+}

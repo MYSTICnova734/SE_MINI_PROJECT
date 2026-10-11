@@ -1,0 +1,43 @@
+digraph AcademicOperationsUseCase {
+    rankdir=LR;
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Actors
+    node [shape=actor, style=solid];
+    Student [label="Student"];
+    Faculty [label="Faculty"];
+
+    // System Boundary
+    subgraph cluster_system {
+        label="Academic Operations Module";
+        style="dashed";
+        color="#0056B3";
+        node [shape=ellipse, style=filled, fillcolor="#F8F9FA", color="#333333"];
+
+        UC_UpdateProfile [label="Update Contact Details"];
+        UC_SelfEnroll [label="Self-Enroll in Courses\n(Max 6)"];
+        UC_ViewAttendance [label="View Course Attendance"];
+        UC_ViewGrades [label="View Published Grades & GPA"];
+        UC_RegradeRequest [label="Submit Regrade Request"];
+
+        UC_TakeRollCall [label="Take Session Roll-Call\n(< 48h Constraint)"];
+        UC_InputMarks [label="Record Rubric Marks"];
+        UC_SubmitGrades [label="Submit Draft Grades"];
+        UC_ResolveDispute [label="Resolve Regrade Request"];
+    }
+
+    // Student Connections
+    Student -> UC_UpdateProfile;
+    Student -> UC_SelfEnroll;
+    Student -> UC_ViewAttendance;
+    Student -> UC_ViewGrades;
+    Student -> UC_RegradeRequest;
+
+    // Faculty Connections
+    Faculty -> UC_UpdateProfile;
+    Faculty -> UC_TakeRollCall;
+    Faculty -> UC_InputMarks;
+    Faculty -> UC_SubmitGrades;
+    Faculty -> UC_ResolveDispute;
+}
