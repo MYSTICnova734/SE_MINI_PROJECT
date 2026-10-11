@@ -156,7 +156,18 @@ Field lengths, data types, mandatory status and the final field list are defined
 - The response-time target is defined in Section 6.1. Marking attendance for a class of up to 60 students in under 2 minutes is covered by REQ-QUA-006.
 
 ### Stimulus/Response Sequences
-TODO
+| # | Stimulus (trigger) | System validation | System response |
+|---|---|---|---|
+| SR-1 | Faculty member opens attendance for a scheduled session of a course they teach, at or after its start time. | Authenticated; teaches the course offering; session is scheduled; start time reached. | Enrolled Active students listed, one entry each, showing the current status where one exists. |
+| SR-2 | Faculty member submits a status for every listed student. | Every student has a status; no overlap conflict; records unchanged since opened. | All entries saved together; audit entries written; confirmation shows the number of students marked Present and Absent. |
+| SR-3 | Faculty member submits Present for a student who is already Present in an overlapping session. | Overlap check fails. | Nothing from the submission saved; each conflicting student and session is named. |
+| SR-4 | Faculty member tries to mark a session that is not scheduled, has not yet started, or belongs to a course they do not teach. | Schedule, time or teaching check fails. | Request rejected with a message stating the reason; a request for a course they do not teach is denied and logged. |
+| SR-5 | Faculty member corrects an entry while the edit window is open. | Role, teaching and window checks pass. | Entry updated; old and new status logged. |
+| SR-6 | Faculty member corrects an entry after the edit window has closed. | Window check fails. | Entry unchanged; user told that only an Administrator can amend it. |
+| SR-7 | Administrator enters or amends an entry and supplies a reason. | Role is Administrator; reason supplied; overlap check passes. | Entry saved and flagged as amended; old status, new status and reason logged. |
+| SR-8 | Faculty member or Administrator submits changes to attendance that another user saved after it was opened. | Version check finds the data has changed. | Update rejected; current values displayed so the edit can be re-applied. |
+| SR-9 | Student opens their own attendance. | Authenticated; role is Student. | Own attendance shown read-only for each course, with a summary of sessions marked, sessions present and the attendance percentage. |
+| SR-10 | A Student attempts to mark or change attendance, or a Faculty member requests attendance of a course they do not teach. | Role or teaching check fails. | Access denied; no data disclosed; attempt logged. |
 
 ### Functional Requirements
 <!-- Nail down the actual constraint rules here, e.g. edit window, overlapping sessions, etc. -->
