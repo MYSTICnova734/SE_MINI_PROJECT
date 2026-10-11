@@ -128,10 +128,46 @@ Field lengths, data types, mandatory status and the final field list are defined
 ## Mark Attendance (with constraints)
 
 ### Description and Priority
-TODO
+**Description.** Mark Attendance lets Faculty members record whether each student was present or absent at a scheduled class session, and lets students view their own attendance. Attendance is recorded per student per class session, and only for sessions that have been scheduled. Two constraints apply. A student cannot be marked Present in two class sessions whose scheduled times overlap, and a Faculty member can correct an entry only within a limited edit window after the session. After that window only an Administrator can amend an entry, with a written reason and the change logged (Appendix D). Every entry and change is written to the audit trail.
+
+**Priority:** High. Attendance is one of the system's core purposes, and the institution reported that attendance is currently entered late and cannot be traced to a person (Appendix D).
+
+**Preconditions.**
+- The class session exists in the schedule, for a course offering that the Faculty member teaches.
+- The student is enrolled in that course offering and is Active.
+- The user is authenticated.
+
+**Inputs.**
+
+| Data | Provided by | Details |
+|---|---|---|
+| Class session | Faculty member | A scheduled session of a course offering, with its date, start time and end time. |
+| Attendance status | Faculty member | One status per listed student: Present or Absent. |
+| Amendment reason | Administrator | Free text, required for every entry or amendment made by an Administrator. |
+
+**Edit window.** A Faculty member can mark attendance for a session from its scheduled start time until 24 hours after its scheduled end time. The window is measured against the server clock. The length of the window is a team decision, since Appendix D leaves it open.
+
+**Assumptions and dependencies.**
+- What each role may do is defined in Section 5.6. A Faculty member's right to mark attendance depends on teaching the course offering.
+- The schedule of class sessions is assumed to exist. How it reaches the system is TBD, and timetable generation is out of scope (Section 2.6).
+- Enrolment of students in course offerings is assumed to exist (Section 2.6).
+- Inactive students are excluded from new attendance entry (REQ-REC-010).
+- Only the statuses Present and Absent are provided in this version. Other statuses, such as late or excused, are not.
+- The response-time target is defined in Section 6.1. Marking attendance for a class of up to 60 students in under 2 minutes is covered by REQ-QUA-006.
 
 ### Stimulus/Response Sequences
-TODO
+| # | Stimulus (trigger) | System validation | System response |
+|---|---|---|---|
+| SR-1 | Faculty member opens attendance for a scheduled session of a course they teach, at or after its start time. | Authenticated; teaches the course offering; session is scheduled; start time reached. | Enrolled Active students listed, one entry each, showing the current status where one exists. |
+| SR-2 | Faculty member submits a status for every listed student. | Every student has a status; no overlap conflict; records unchanged since opened. | All entries saved together; audit entries written; confirmation shows the number of students marked Present and Absent. |
+| SR-3 | Faculty member submits Present for a student who is already Present in an overlapping session. | Overlap check fails. | Nothing from the submission saved; each conflicting student and session is named. |
+| SR-4 | Faculty member tries to mark a session that is not scheduled, has not yet started, or belongs to a course they do not teach. | Schedule, time or teaching check fails. | Request rejected with a message stating the reason; a request for a course they do not teach is denied and logged. |
+| SR-5 | Faculty member corrects an entry while the edit window is open. | Role, teaching and window checks pass. | Entry updated; old and new status logged. |
+| SR-6 | Faculty member corrects an entry after the edit window has closed. | Window check fails. | Entry unchanged; user told that only an Administrator can amend it. |
+| SR-7 | Administrator enters or amends an entry and supplies a reason. | Role is Administrator; reason supplied; overlap check passes. | Entry saved and flagged as amended; old status, new status and reason logged. |
+| SR-8 | Faculty member or Administrator submits changes to attendance that another user saved after it was opened. | Version check finds the data has changed. | Update rejected; current values displayed so the edit can be re-applied. |
+| SR-9 | Student opens their own attendance. | Authenticated; role is Student. | Own attendance shown read-only for each course, with a summary of sessions marked, sessions present and the attendance percentage. |
+| SR-10 | A Student attempts to mark or change attendance, or a Faculty member requests attendance of a course they do not teach. | Role or teaching check fails. | Access denied; no data disclosed; attempt logged. |
 
 ### Functional Requirements
 <!-- Nail down the actual constraint rules here, e.g. edit window, overlapping sessions, etc. -->
@@ -216,8 +252,21 @@ TODO
 TODO
 
 ### Functional Requirements
-- REQ-RET-1:
-- REQ-RET-2:
+- **REQ-ATT-001:** The system shall allow only a Faculty member who teaches a course offering to mark attendance for that offering's class sessions, and shall deny any such attempt by other Faculty members, Students and Administrators, except as permitted by REQ-ATT-010.
+- **REQ-ATT-002:** The system shall accept attendance only for a class session that exists in the schedule, and shall reject an attempt to mark any other session.
+- **REQ-ATT-003:** The system shall allow a Faculty member to mark or correct attendance for a session only from its scheduled start time until 24 hours after its scheduled end time, measured against the server clock, and shall otherwise reject the attempt with a message stating why.
+- **REQ-ATT-004:** The system shall list for marking only the students who are enrolled in the session's course offering and are Active, and shall not accept attendance for any other student.
+- **REQ-ATT-005:** The system shall accept only the statuses Present and Absent, and shall reject a submission in which any listed student has no status, naming each such student.
+- **REQ-ATT-006:** The system shall hold at most one attendance record per student per class session, and shall update that record rather than create a second one when attendance is submitted again.
+- **REQ-ATT-007:** The system shall reject a Present entry for a student who is already Present in another class session whose scheduled time overlaps, where two sessions overlap if each starts before the other ends, and shall name the conflicting session. Sessions that only touch at a boundary do not overlap, and Absent entries are not checked.
+- **REQ-ATT-008:** The system shall save a submission for a class session in full or not at all, and when any entry is invalid shall report every invalid entry and save none of them.
+- **REQ-ATT-009:** After the edit window has closed, the system shall reject any correction by a Faculty member and shall tell the user that only an Administrator can amend the entry.
+- **REQ-ATT-010:** The system shall allow an Administrator to enter or amend an attendance entry for any session at any time, shall require a written reason, shall apply REQ-ATT-007, and shall flag the entry as amended.
+- **REQ-ATT-011:** The system shall detect and reject an attendance update based on stale data, in the same way as REQ-REC-007, and shall display the current values.
+- **REQ-ATT-012:** The system shall write an audit entry for every attendance entry and change containing the user, the date and time, the student, the class session, the old and new status and any reason, and shall provide no means to modify or delete audit entries.
+- **REQ-ATT-013:** The system shall show a Student only their own attendance, read-only, for each class session with its course, date, time and status, together with the number of sessions marked, the number marked Present and the attendance percentage (Present divided by marked, to two decimal places, or "Not available" when no session has been marked).
+- **REQ-ATT-014:** The system shall deny a Student any marking or change of attendance, and shall deny a Faculty member any access to attendance of a course they do not teach, without disclosing any attendance data, and shall log the attempt (REQ-RBAC-020).
+- **REQ-ATT-015:** The system shall complete an attendance save or retrieval within the response-time target defined in Section 6.1.
 
 ## Role-Based Access
  
