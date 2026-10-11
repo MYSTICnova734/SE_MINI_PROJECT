@@ -128,7 +128,32 @@ Field lengths, data types, mandatory status and the final field list are defined
 ## Mark Attendance (with constraints)
 
 ### Description and Priority
-TODO
+**Description.** Mark Attendance lets Faculty members record whether each student was present or absent at a scheduled class session, and lets students view their own attendance. Attendance is recorded per student per class session, and only for sessions that have been scheduled. Two constraints apply. A student cannot be marked Present in two class sessions whose scheduled times overlap, and a Faculty member can correct an entry only within a limited edit window after the session. After that window only an Administrator can amend an entry, with a written reason and the change logged (Appendix D). Every entry and change is written to the audit trail.
+
+**Priority:** High. Attendance is one of the system's core purposes, and the institution reported that attendance is currently entered late and cannot be traced to a person (Appendix D).
+
+**Preconditions.**
+- The class session exists in the schedule, for a course offering that the Faculty member teaches.
+- The student is enrolled in that course offering and is Active.
+- The user is authenticated.
+
+**Inputs.**
+
+| Data | Provided by | Details |
+|---|---|---|
+| Class session | Faculty member | A scheduled session of a course offering, with its date, start time and end time. |
+| Attendance status | Faculty member | One status per listed student: Present or Absent. |
+| Amendment reason | Administrator | Free text, required for every entry or amendment made by an Administrator. |
+
+**Edit window.** A Faculty member can mark attendance for a session from its scheduled start time until 24 hours after its scheduled end time. The window is measured against the server clock. The length of the window is a team decision, since Appendix D leaves it open.
+
+**Assumptions and dependencies.**
+- What each role may do is defined in Section 5.6. A Faculty member's right to mark attendance depends on teaching the course offering.
+- The schedule of class sessions is assumed to exist. How it reaches the system is TBD, and timetable generation is out of scope (Section 2.6).
+- Enrolment of students in course offerings is assumed to exist (Section 2.6).
+- Inactive students are excluded from new attendance entry (REQ-REC-010).
+- Only the statuses Present and Absent are provided in this version. Other statuses, such as late or excused, are not.
+- The response-time target is defined in Section 6.1. Marking attendance for a class of up to 60 students in under 2 minutes is covered by REQ-QUA-006.
 
 ### Stimulus/Response Sequences
 TODO
