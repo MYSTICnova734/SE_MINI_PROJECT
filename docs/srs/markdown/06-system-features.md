@@ -246,7 +246,33 @@ Field lengths, data types, mandatory status and the final field list are defined
 ## Retrieval
 
 ### Description and Priority
-TODO
+**Description.** Retrieval lets users search for students and view stored information: student records, attendance and grades. It is read-only, and changes are made through Sections 5.2 to 5.4. Results are always limited to what the user's role permits (Section 5.6). An Administrator can retrieve all students, both Active and Inactive. A Faculty member can retrieve only Active students enrolled in the course offerings they teach. A Student can view only their own information and has no search function.
+
+**Priority:** High. Every other feature depends on finding the right record, and Section 5.2 relies on retrieval to select the record to edit. The stakeholder agreed a response-time target for retrieval (Appendix D).
+
+**Preconditions.**
+- The user is authenticated.
+- For a Faculty member, at least one Teaching Assignment exists.
+
+**Inputs.**
+
+| Search criterion | Available to | Details |
+|---|---|---|
+| SRN | Administrator, Faculty member | Exact match. |
+| Name | Administrator, Faculty member | Partial match, not case-sensitive, at least 2 characters. |
+| Programme, section | Administrator, Faculty member | Exact match. |
+| Course offering | Administrator, Faculty member | A Faculty member can choose only course offerings they teach. |
+| Account status (Active or Inactive) | Administrator only | Faculty members see only Active students. |
+
+Criteria are optional and can be combined. Maximum lengths are defined in Appendix B. Phone number and address are not search criteria.
+
+**What can be viewed.** Student records (Section 5.2), attendance (Section 5.3) and marks and grades (Section 5.4). Unpublished marks are visible only to the Faculty members teaching the course and to Administrators, and Students see only published grades (REQ-GRD-019, REQ-GRD-020).
+
+**Assumptions and dependencies.**
+- What each role may do is defined in Section 5.6.
+- A Faculty member sees a student's academic details (SRN, name, programme, section) but not contact details (email, phone, address). This is a team decision.
+- Results are shown 25 per page, which is a team decision.
+- The response-time target is defined in Section 6.1.
 
 ### Stimulus/Response Sequences
 TODO
