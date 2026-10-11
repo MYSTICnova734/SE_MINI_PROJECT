@@ -1,0 +1,52 @@
+// Source for docs/srs/markdown/images/er-attendance-grading.png
+// Regenerate (from docs/srs/diagrams/) with:
+//   dot -Tpng -Gdpi=200 er-attendance-grading.dot -o ../markdown/images/er-attendance-grading.png
+// Conceptual model only: keys and the most important attributes are shown.
+// Full field layouts are in Appendix B; the final schema is in the design document.
+// Crow's foot notation:  exactly one = ||   zero or one = o|   zero or many = o<   one or many = |<
+// Edges go parent -> child. The tail end (parent) is always "exactly one";
+// the head end (child) shows the child's cardinality.
+digraph er_attendance_grading {
+  rankdir=TB;
+  nodesep=0.3; ranksep=0.6;
+  splines=true;
+  graph [fontname="DejaVu Sans", fontsize=11, pad=0.2];
+  node  [shape=plaintext, fontname="DejaVu Sans", fontsize=10];
+  edge  [fontname="DejaVu Sans", fontsize=9, color="#4a5568", dir=both, arrowtail=teetee];
+
+  student [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#dbe7f5"><B>Student</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  srn<BR/>FK  account_id<BR/>name, phone, address<BR/>programme, section</TD></TR></TABLE>>];
+
+  offering [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#e4f4e8"><B>Course Offering</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  offering_id<BR/>FK  course_id<BR/>term</TD></TR></TABLE>>];
+
+  session [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#fff1d6"><B>Class Session</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  session_id<BR/>FK  offering_id<BR/>start_time, end_time</TD></TR></TABLE>>];
+
+  attend [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#fff1d6"><B>Attendance Record</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">FK  session_id<BR/>FK  srn<BR/>status</TD></TR></TABLE>>];
+
+  rubric [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#f3e3f5"><B>Rubric</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  rubric_id<BR/>FK  offering_id (unique)<BR/>locked</TD></TR></TABLE>>];
+
+  component [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#f3e3f5"><B>Rubric Component</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  component_id<BR/>FK  rubric_id<BR/>name, max_mark, weight</TD></TR></TABLE>>];
+
+  mark [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#f3e3f5"><B>Mark</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">FK  srn<BR/>FK  component_id<BR/>value, status<BR/>(draft / published / amended)</TD></TR></TABLE>>];
+
+  offering   -> session    [arrowhead=crowodot];  // 1 : 0..*
+  session    -> attend     [arrowhead=crowodot];  // 1 : 0..*
+  student    -> attend     [arrowhead=crowodot];  // 1 : 0..*
+  offering   -> rubric     [arrowhead=teeodot];  // 1 : 0..1
+  rubric     -> component  [arrowhead=crowtee];  // 1 : 1..*
+  component  -> mark       [arrowhead=crowodot];  // 1 : 0..*
+  student    -> mark       [arrowhead=crowodot];  // 1 : 0..*
+}

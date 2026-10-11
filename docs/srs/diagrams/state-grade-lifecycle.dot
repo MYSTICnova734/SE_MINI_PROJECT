@@ -1,0 +1,25 @@
+// Source for docs/srs/markdown/images/state-grade-lifecycle.png
+// Regenerate (from docs/srs/diagrams/) with:
+//   dot -Tpng -Gdpi=200 state-grade-lifecycle.dot -o ../markdown/images/state-grade-lifecycle.png
+digraph grade_lifecycle {
+  rankdir=TB;
+  nodesep=0.5; ranksep=0.45;
+  graph [fontname="DejaVu Sans", fontsize=11, pad=0.2];
+  node  [shape=box, style="rounded,filled", fillcolor="#ffffff", color="#4a5568",
+         fontname="DejaVu Sans", fontsize=11, margin="0.2,0.12"];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#4a5568"];
+
+  start [shape=circle, style=filled, fillcolor="#4a5568", label="", width=0.2, height=0.2];
+
+  none      [label="Not entered", fillcolor="#f7f7f7"];
+  draft     [label="Draft\nvisible to the faculty teaching the course\nand to Administrators only", fillcolor="#fff1d6"];
+  published [label="Published\nvisible to the student\nrubric locked", fillcolor="#e4f4e8"];
+  amended   [label="Amended\nflagged as amended\nreason recorded", fillcolor="#f3e3f5"];
+
+  start     -> none;
+  none      -> draft     [label="Faculty enters\nthe mark"];
+  draft     -> draft     [label="Faculty edits\nthe mark"];
+  draft     -> published [label="Anchor faculty publishes\nthe course's grades"];
+  published -> amended   [label="Anchor faculty amends\nthe mark (reason required)"];
+  amended   -> amended   [label="Anchor faculty amends\nagain (reason required)"];
+}

@@ -1,0 +1,65 @@
+// Source for docs/srs/markdown/images/er-accounts-courses.png
+// Regenerate (from docs/srs/diagrams/) with:
+//   dot -Tpng -Gdpi=200 er-accounts-courses.dot -o ../markdown/images/er-accounts-courses.png
+// Conceptual model only: keys and the most important attributes are shown.
+// Full field layouts are in Appendix B; the final schema is in the design document.
+// Crow's foot notation:  exactly one = ||   zero or one = o|   zero or many = o<   one or many = |<
+// Edges go parent -> child. The tail end (parent) is always "exactly one";
+// the head end (child) shows the child's cardinality.
+digraph er_accounts_courses {
+  rankdir=TB;
+  nodesep=0.3; ranksep=0.6;
+  splines=true;
+  graph [fontname="DejaVu Sans", fontsize=11, pad=0.2];
+  node  [shape=plaintext, fontname="DejaVu Sans", fontsize=10];
+  edge  [fontname="DejaVu Sans", fontsize=9, color="#4a5568", dir=both, arrowtail=teetee];
+
+  account [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#dbe7f5"><B>Account</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  account_id<BR/>email (unique)<BR/>role<BR/>account_status<BR/>password_hash</TD></TR></TABLE>>];
+
+  student [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#dbe7f5"><B>Student</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  srn<BR/>FK  account_id<BR/>name, phone, address<BR/>programme, section</TD></TR></TABLE>>];
+
+  faculty [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#dbe7f5"><B>Faculty</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  staff_id<BR/>FK  account_id<BR/>name, department</TD></TR></TABLE>>];
+
+  setup [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#dbe7f5"><B>Setup Credential</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  credential_id<BR/>FK  account_id<BR/>expires_at, used</TD></TR></TABLE>>];
+
+  audit [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#e8e8e8"><B>Audit Trail Entry</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  entry_id<BR/>FK  account_id (who)<BR/>time, action, details</TD></TR></TABLE>>];
+
+  course [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#e4f4e8"><B>Course</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  course_id<BR/>code, title</TD></TR></TABLE>>];
+
+  offering [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#e4f4e8"><B>Course Offering</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">PK  offering_id<BR/>FK  course_id<BR/>term</TD></TR></TABLE>>];
+
+  teaching [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#e4f4e8"><B>Teaching Assignment</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">FK  offering_id<BR/>FK  staff_id<BR/>is_anchor</TD></TR></TABLE>>];
+
+  enrol [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="#4a5568">
+    <TR><TD BGCOLOR="#e4f4e8"><B>Enrolment</B></TD></TR>
+    <TR><TD ALIGN="LEFT" BALIGN="LEFT">FK  srn<BR/>FK  offering_id</TD></TR></TABLE>>];
+
+  account    -> student    [arrowhead=teeodot];  // 1 : 0..1
+  account    -> faculty    [arrowhead=teeodot];  // 1 : 0..1
+  account    -> setup      [arrowhead=crowodot];  // 1 : 0..*
+  account    -> audit      [arrowhead=crowodot];  // 1 : 0..*
+  course     -> offering   [arrowhead=crowodot];  // 1 : 0..*
+  offering   -> teaching   [arrowhead=crowtee];  // 1 : 1..*  (exactly one of them is the anchor faculty)
+  faculty    -> teaching   [arrowhead=crowodot];  // 1 : 0..*
+  student    -> enrol      [arrowhead=crowodot];  // 1 : 0..*
+  offering   -> enrol      [arrowhead=crowodot];  // 1 : 0..*
+
+  // layout hint only: stack the two supporting entities to keep the figure narrow
+  setup -> audit [style=invis];
+}
