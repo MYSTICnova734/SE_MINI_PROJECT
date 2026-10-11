@@ -22,6 +22,13 @@ These requirements give the response-time and capacity targets that Sections 5.2
 - **REQ-PER-004:** The system shall complete the publication of a course's grades, including recalculation of the weighted totals of up to 60 students, within 5 seconds under normal load.
 - **REQ-PER-005:** Under peak load, the system shall complete the operations in REQ-PER-001 to REQ-PER-003 within 5 seconds.
 
+- 
+**Capacity and verification**
+- **REQ-PER-006:** The system shall support 10,000 user accounts and 300 concurrent authenticated users at peak load, with at least 99% of requests completing without a server error caused by load.
+- **REQ-PER-007:** The system shall meet the targets in REQ-PER-001 to REQ-PER-005 with the volume of accumulated data stated in REQ-QUA-018.
+- **REQ-PER-008:** Under peak load, the system shall not lose or duplicate any attendance entry, record edit or mark that it has confirmed to a user (REQ-QUA-003).
+- **REQ-PER-009:** Before each release, the targets in this section shall be verified by a load test of the system, started from its Docker Compose configuration with the data volume stated in REQ-QUA-018, and the 95th-percentile response time for each operation at normal and peak load shall be recorded.
+
 ## Safety Requirements
  
 The Student Record System does not control any physical equipment, so it poses no physical safety hazard and no safety certification is required. The harm it could cause is to the institution's data and to the people the data describes: records that are lost or corrupted, grades that are calculated wrongly, or consequential actions taken by mistake. The requirements below guard against these. Protection of personal data from unauthorised access is covered in Section 6.3.
