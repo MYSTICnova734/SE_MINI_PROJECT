@@ -252,8 +252,21 @@ TODO
 TODO
 
 ### Functional Requirements
-- REQ-RET-1:
-- REQ-RET-2:
+- **REQ-ATT-001:** The system shall allow only a Faculty member who teaches a course offering to mark attendance for that offering's class sessions, and shall deny any such attempt by other Faculty members, Students and Administrators, except as permitted by REQ-ATT-010.
+- **REQ-ATT-002:** The system shall accept attendance only for a class session that exists in the schedule, and shall reject an attempt to mark any other session.
+- **REQ-ATT-003:** The system shall allow a Faculty member to mark or correct attendance for a session only from its scheduled start time until 24 hours after its scheduled end time, measured against the server clock, and shall otherwise reject the attempt with a message stating why.
+- **REQ-ATT-004:** The system shall list for marking only the students who are enrolled in the session's course offering and are Active, and shall not accept attendance for any other student.
+- **REQ-ATT-005:** The system shall accept only the statuses Present and Absent, and shall reject a submission in which any listed student has no status, naming each such student.
+- **REQ-ATT-006:** The system shall hold at most one attendance record per student per class session, and shall update that record rather than create a second one when attendance is submitted again.
+- **REQ-ATT-007:** The system shall reject a Present entry for a student who is already Present in another class session whose scheduled time overlaps, where two sessions overlap if each starts before the other ends, and shall name the conflicting session. Sessions that only touch at a boundary do not overlap, and Absent entries are not checked.
+- **REQ-ATT-008:** The system shall save a submission for a class session in full or not at all, and when any entry is invalid shall report every invalid entry and save none of them.
+- **REQ-ATT-009:** After the edit window has closed, the system shall reject any correction by a Faculty member and shall tell the user that only an Administrator can amend the entry.
+- **REQ-ATT-010:** The system shall allow an Administrator to enter or amend an attendance entry for any session at any time, shall require a written reason, shall apply REQ-ATT-007, and shall flag the entry as amended.
+- **REQ-ATT-011:** The system shall detect and reject an attendance update based on stale data, in the same way as REQ-REC-007, and shall display the current values.
+- **REQ-ATT-012:** The system shall write an audit entry for every attendance entry and change containing the user, the date and time, the student, the class session, the old and new status and any reason, and shall provide no means to modify or delete audit entries.
+- **REQ-ATT-013:** The system shall show a Student only their own attendance, read-only, for each class session with its course, date, time and status, together with the number of sessions marked, the number marked Present and the attendance percentage (Present divided by marked, to two decimal places, or "Not available" when no session has been marked).
+- **REQ-ATT-014:** The system shall deny a Student any marking or change of attendance, and shall deny a Faculty member any access to attendance of a course they do not teach, without disclosing any attendance data, and shall log the attempt (REQ-RBAC-020).
+- **REQ-ATT-015:** The system shall complete an attendance save or retrieval within the response-time target defined in Section 6.1.
 
 ## Role-Based Access
  
