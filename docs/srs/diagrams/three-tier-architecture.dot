@@ -1,0 +1,32 @@
+// Source for docs/srs/markdown/images/three-tier-architecture.png
+// Regenerate (from docs/srs/diagrams/) with:
+//   dot -Tpng -Gdpi=200 three-tier-architecture.dot -o ../markdown/images/three-tier-architecture.png
+digraph architecture {
+  rankdir=TB;
+  nodesep=0.6; ranksep=0.6;
+  graph [fontname="DejaVu Sans", fontsize=11, pad=0.2];
+  node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
+         color="#4a5568", fillcolor="#ffffff", margin="0.25,0.15"];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#4a5568"];
+
+  users [label="Users\nAdministrator · Faculty · Student", fillcolor="#edf2f7"];
+
+  subgraph cluster_browser {
+    label="Web browser"; style="rounded,dashed"; color="#718096";
+    frontend [label="Frontend\nReact single-page application", fillcolor="#e3efff"];
+  }
+
+  subgraph cluster_server {
+    label="Institution's Linux server (Docker containers)"; style="rounded"; color="#4a5568";
+    backend [label="Backend: Flask application\nauthentication · role-based access ·\nvalidation · business rules · audit trail", fillcolor="#e4f4e8"];
+    db      [label="Database\nMySQL", shape=cylinder, fillcolor="#fff1d6"];
+  }
+
+  email [label="Email delivery service\n(sends setup credentials)", style="rounded,dashed,filled", fillcolor="#f7f7f7"];
+
+  users    -> frontend [label=" uses"];
+  frontend -> backend  [label=" HTTP(S), JSON\n (REST API)", dir=both];
+  backend  -> db       [label=" ORM / SQL", dir=both];
+  backend  -> email    [xlabel="setup credential email  ", style=dashed];
+
+}

@@ -4,33 +4,9 @@
 
 The Student Record System is a new, self-contained product. It replaces the spreadsheets and departmental registers the institution currently uses for student details, attendance and grades (Appendix D). It is not a follow-on to an earlier system and is not a component of a larger one. In this release it does not exchange data with any other institutional system. Integration with the university's single sign-on service has been deferred (Section 1.3).
 
-The system is a three-tier web application, shown below.
+The system is a three-tier web application, shown in the figure below.
 
-```
-  Administrator / Faculty / Student
-  (web browser running the frontend)
-                  |
-                  |  HTTP(S), JSON
-                  v
-  +-------------------------------------+
-  |  Backend: Flask application         |
-  |  Authentication, role-based access, |
-  |  validation, business rules,        |
-  |  audit trail                        |
-  +-------------------------------------+
-                  |
-                  |  ORM / SQL
-                  v
-  +-------------------------------------+
-  |  Database: MySQL                    |
-  +-------------------------------------+
-
-  Frontend: React single-page application,
-  served to the browser by the system.
-
-  All components run as Docker containers on
-  the institution's own servers (self-hosted).
-```
+![Three-tier architecture of the Student Record System. All components run as Docker containers on the institution's own servers (self-hosted).](images/three-tier-architecture.png){ width=65% }
 
 Users reach the system through a standard web browser. The React frontend presents the user interface. The Flask backend is the only component that reads or writes data, and it enforces authentication, role-based access, validation and business rules on every request, so checks in the frontend are only a convenience (REQ-RBAC-003). MySQL stores all persistent data, including the audit trail, and is the same database in development, testing and deployment. The system is self-hosted because the institution's users are mostly on or near the campus, so a cloud provider's wide geographic reach offers little benefit, and the institution's own IT team can maintain it (Appendix D).
 
