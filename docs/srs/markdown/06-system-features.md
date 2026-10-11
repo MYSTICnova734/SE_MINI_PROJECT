@@ -288,21 +288,20 @@ Criteria are optional and can be combined. Maximum lengths are defined in Append
 | SR-9 | Student attempts to search for students or view another student's data. | Role or ownership check fails. | "Access Denied/Unauthorized"; no data disclosed; attempt logged. |
 
 ### Functional Requirements
-- **REQ-ATT-001:** The system shall allow only a Faculty member who teaches a course offering to mark attendance for that offering's class sessions, and shall deny any such attempt by other Faculty members, Students and Administrators, except as permitted by REQ-ATT-010.
-- **REQ-ATT-002:** The system shall accept attendance only for a class session that exists in the schedule, and shall reject an attempt to mark any other session.
-- **REQ-ATT-003:** The system shall allow a Faculty member to mark or correct attendance for a session only from its scheduled start time until 24 hours after its scheduled end time, measured against the server clock, and shall otherwise reject the attempt with a message stating why.
-- **REQ-ATT-004:** The system shall list for marking only the students who are enrolled in the session's course offering and are Active, and shall not accept attendance for any other student.
-- **REQ-ATT-005:** The system shall accept only the statuses Present and Absent, and shall reject a submission in which any listed student has no status, naming each such student.
-- **REQ-ATT-006:** The system shall hold at most one attendance record per student per class session, and shall update that record rather than create a second one when attendance is submitted again.
-- **REQ-ATT-007:** The system shall reject a Present entry for a student who is already Present in another class session whose scheduled time overlaps, where two sessions overlap if each starts before the other ends, and shall name the conflicting session. Sessions that only touch at a boundary do not overlap, and Absent entries are not checked.
-- **REQ-ATT-008:** The system shall save a submission for a class session in full or not at all, and when any entry is invalid shall report every invalid entry and save none of them.
-- **REQ-ATT-009:** After the edit window has closed, the system shall reject any correction by a Faculty member and shall tell the user that only an Administrator can amend the entry.
-- **REQ-ATT-010:** The system shall allow an Administrator to enter or amend an attendance entry for any session at any time, shall require a written reason, shall apply REQ-ATT-007, and shall flag the entry as amended.
-- **REQ-ATT-011:** The system shall detect and reject an attendance update based on stale data, in the same way as REQ-REC-007, and shall display the current values.
-- **REQ-ATT-012:** The system shall write an audit entry for every attendance entry and change containing the user, the date and time, the student, the class session, the old and new status and any reason, and shall provide no means to modify or delete audit entries.
-- **REQ-ATT-013:** The system shall show a Student only their own attendance, read-only, for each class session with its course, date, time and status, together with the number of sessions marked, the number marked Present and the attendance percentage (Present divided by marked, to two decimal places, or "Not available" when no session has been marked).
-- **REQ-ATT-014:** The system shall deny a Student any marking or change of attendance, and shall deny a Faculty member any access to attendance of a course they do not teach, without disclosing any attendance data, and shall log the attempt (REQ-RBAC-020).
-- **REQ-ATT-015:** The system shall complete an attendance save or retrieval within the response-time target defined in Section 6.1.
+- **REQ-RET-001:** The system shall provide a student search function to Administrators and Faculty members only, and shall deny a search request from a Student and log the attempt.
+- **REQ-RET-002:** The system shall allow searching by SRN (exact match), name (partial match, not case-sensitive, at least 2 characters), programme, section, course offering, and, for Administrators only, account status, with criteria combinable so that a result matches every criterion supplied.
+- **REQ-RET-003:** The system shall validate every search criterion in the backend, shall reject an invalid criterion with a message naming it and the problem, and shall treat criterion values only as data (REQ-SEC-014).
+- **REQ-RET-004:** The system shall return to an Administrator all students matching the criteria, both Active and Inactive, and shall return to a Faculty member only Active students enrolled in course offerings they teach, evaluating this on every request.
+- **REQ-RET-005:** When no criterion is supplied, the system shall return every student within the user's permitted scope.
+- **REQ-RET-006:** The system shall list results sorted by name and then SRN, 25 per page, showing for each student the SRN, name, programme and section (and the account status to Administrators), together with the total number of matches and a means to move between pages.
+- **REQ-RET-007:** When a result is selected, the system shall display to an Administrator the student's full record as defined in Section 5.2, and to a Faculty member only the SRN, name, programme and section.
+- **REQ-RET-008:** The system shall make attendance retrievable by Administrators for all students, by a Faculty member for the sessions of course offerings they teach, and by a Student for their own sessions only.
+- **REQ-RET-009:** The system shall make marks and grades retrievable in accordance with Section 5.4, so that unpublished marks are shown only to the Faculty members teaching the course and to Administrators, and a Student sees only their own published grades.
+- **REQ-RET-010:** The system shall allow a Student to retrieve only their own profile, attendance and published grades (REQ-RBAC-012), and shall give no access to any other student's data.
+- **REQ-RET-011:** When no student matches, or the only match is outside the user's scope, the system shall show the same message "No matching students found", without revealing whether the student exists.
+- **REQ-RET-012:** The system shall deny a direct request for a record outside the user's scope with "Access Denied/Unauthorized", disclosing no record data, and shall log the attempt (REQ-RBAC-020).
+- **REQ-RET-013:** The system shall not change any data as a result of a retrieval request.
+- **REQ-RET-014:** The system shall return search results within the response-time target defined in Section 6.1.
 
 ## Role-Based Access
  
