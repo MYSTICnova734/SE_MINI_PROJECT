@@ -275,7 +275,17 @@ Criteria are optional and can be combined. Maximum lengths are defined in Append
 - The response-time target is defined in Section 6.1.
 
 ### Stimulus/Response Sequences
-TODO
+| # | Stimulus (trigger) | System validation | System response |
+|---|---|---|---|
+| SR-1 | Administrator submits search criteria. | Authenticated; role is Administrator; criteria valid. | Matching students (Active and Inactive, as filtered) listed by name, 25 per page, with the total number of matches. |
+| SR-2 | Faculty member submits search criteria. | Authenticated; role is Faculty; criteria valid. | Only Active students enrolled in course offerings the Faculty member teaches are searched and listed. |
+| SR-3 | Faculty member searches for the SRN of a student outside their courses. | Scope check excludes the student. | "No matching students found", the same response as for a student who does not exist. |
+| SR-4 | User submits criteria that match no student. | Criteria valid. | "No matching students found"; not treated as an error. |
+| SR-5 | User submits an invalid criterion (for example a one-character name). | Validation fails. | Search not run; the criterion and the problem are named. |
+| SR-6 | Administrator or Faculty member selects a student from the results. | Scope re-checked for that student. | Student's record displayed, with the attendance and marks the user is permitted to see. |
+| SR-7 | Faculty member requests a record directly (not through search) for a student outside their courses. | Scope check fails. | "Access Denied/Unauthorized"; no data disclosed; attempt logged. |
+| SR-8 | Student opens their own profile, attendance or grades. | Authenticated; role is Student. | Own profile and attendance shown, and own grades shown only once published. |
+| SR-9 | Student attempts to search for students or view another student's data. | Role or ownership check fails. | "Access Denied/Unauthorized"; no data disclosed; attempt logged. |
 
 ### Functional Requirements
 - **REQ-ATT-001:** The system shall allow only a Faculty member who teaches a course offering to mark attendance for that offering's class sessions, and shall deny any such attempt by other Faculty members, Students and Administrators, except as permitted by REQ-ATT-010.
