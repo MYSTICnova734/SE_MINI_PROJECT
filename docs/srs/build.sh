@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Builds docs/srs/SRS.pdf from the Markdown files in docs/srs/markdown/,
 # in filename order (hence the numeric prefixes on each file).
+# Images referenced in the Markdown (e.g. images/foo.png) live in
+# docs/srs/markdown/images/ and are found via --resource-path below.
 # Requires: pandoc + a LaTeX engine (xelatex). Run locally with:
 #   brew install pandoc basictex      (mac)
 #   sudo apt install pandoc texlive-xetex texlive-latex-recommended lmodern   (linux)
@@ -25,6 +27,7 @@ pandoc \
   markdown/appendix-d-stakeholder-log.md \
   -o SRS.pdf \
   --pdf-engine=xelatex \
+  --resource-path=markdown \
   -V date="Generated ${BUILD_DATE}"
 
 echo "Built docs/srs/SRS.pdf"

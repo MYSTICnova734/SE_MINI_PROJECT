@@ -1,5 +1,7 @@
 # Builds docs/srs/SRS.pdf from the Markdown files in docs/srs/markdown/,
 # in filename order (hence the numeric prefixes on each file).
+# Images referenced in the Markdown (e.g. images/foo.png) live in
+# docs/srs/markdown/images/ and are found via --resource-path below.
 # Requires: pandoc + a LaTeX engine (MiKTeX, which provides xelatex).
 # Install with (from an admin PowerShell):
 #   winget install --id JohnMacFarlane.Pandoc
@@ -31,6 +33,7 @@ pandoc `
   markdown/appendix-d-stakeholder-log.md `
   -o SRS.pdf `
   --pdf-engine=xelatex `
+  --resource-path=markdown `
   -V "date=Generated $BuildDate"
 
 Write-Host "Built docs/srs/SRS.pdf"
