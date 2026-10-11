@@ -3,7 +3,16 @@
 ## Performance Requirements
 <!-- From reqs.txt: speed/efficiency. Be specific - response time targets, expected concurrent users. -->
 
-TODO
+These requirements give the response-time and capacity targets that Sections 5.2 to 5.5 refer to (for example REQ-REC-013 and REQ-GRD-024). They are based on the stakeholder discussion of 24 September 2026 (Appendix D), which established a design capacity of about 10,000 users with a few hundred concurrent users at peak (when faculty mark attendance at the start and end of class periods and when results are published) and a target of under two seconds for record retrieval under normal load. The numeric load levels below are team decisions that make those statements measurable.
+
+**Definitions.**
+
+| Term | Meaning |
+|---|---|
+| Response time | The time from the backend receiving a request to the backend completing its response, excluding network transfer and browser rendering. |
+| Normal load | Up to 100 concurrent authenticated users. |
+| Peak load | Up to 300 concurrent authenticated users. |
+| Target met | At least 95% of the requests of that kind complete within the stated time. |
 
 ## Safety Requirements
  
