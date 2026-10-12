@@ -1,0 +1,46 @@
+digraph AttendanceSequence {
+    graph [dpi=300, rankdir=TB, nodesep=0.5, ranksep=0.4, margin=0.2, bgcolor=transparent];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9, arrowsize=0.8];
+
+    // Participants
+    subgraph cluster_participants {
+        style=invis;
+        { rank=same;
+            P_Faculty [label="Faculty Client\n(Browser)", shape=box, style="filled,rounded", fillcolor="#E1F5FE", color="#0288D1", width=1.8];
+            P_Gateway [label="API Gateway\n(Auth & RBAC)", shape=box, style="filled,rounded", fillcolor="#E8F5E9", color="#388E3C", width=1.8];
+            P_Service [label="Attendance Service\n(Business Logic)", shape=box, style="filled,rounded", fillcolor="#FFF3E0", color="#F57C00", width=1.8];
+            P_DB      [label="Database\n(Relational Store)", shape=cylinder, style=filled, fillcolor="#FFEBEE", color="#D32F2F", width=1.8];
+        }
+    }
+
+    // Sequence steps as invisible node anchors along lifelines
+    node [shape=point, width=0, height=0, style=invis];
+
+    // Lifelines
+    F1; F2; F3; F4; F5;
+    P_Faculty -> F1 -> F2 -> F3 -> F4 -> F5 [style=dashed, color="#888888", arrowhead=none];
+
+    G1; G2; G3; G4; G5;
+    P_Gateway -> G1 -> G2 -> G3 -> G4 -> G5 [style=dashed, color="#888888", arrowhead=none];
+
+    S1; S2; S3; S4; S5;
+    P_Service -> S1 -> S2 -> S3 -> S4 -> S5 [style=dashed, color="#888888", arrowhead=none];
+
+    D1; D2; D3; D4; D5;
+    P_DB -> D1 -> D2 -> D3 -> D4 -> D5 [style=dashed, color="#888888", arrowhead=none];
+
+    // Force horizontal alignment
+    { rank=same; F1; G1; }
+    { rank=same; G2; S2; }
+    { rank=same; S3; D3; }
+    { rank=same; D4; S4; }
+    { rank=same; S5; F5; }
+
+    // Message edges
+    F1 -> G1 [label=" 1. POST /api/v1/attendance (session_id, student_list) ", color="#0288D1", fontcolor="#0288D1"];
+    G2 -> S2 [label=" 2. Validate JWT & RBAC (Faculty Role) ", color="#388E3C", fontcolor="#388E3C"];
+    S3 -> D3 [label=" 3. Query Session Timestamp & Check <= 48h ", color="#F57C00", fontcolor="#F57C00"];
+    D4 -> S4 [label=" 4. Return Session Date / Persist Records ", style=dashed, color="#D32F2F", fontcolor="#D32F2F"];
+    S5 -> F5 [label=" 5. 200 OK (Attendance Recorded) / 403 Forbidden (Frozen) ", style=dashed, color="#0288D1", fontcolor="#0288D1"];
+}

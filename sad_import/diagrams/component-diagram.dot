@@ -1,0 +1,47 @@
+digraph ComponentArchitecture {
+    graph [dpi=300, rankdir=TB, nodesep=0.6, ranksep=0.7, margin=0.2, bgcolor=transparent];
+    node [shape=component, style="filled", fontname="Helvetica-Bold", fontsize=10, fillcolor="#F8F9FA", color="#333333", margin="0.2,0.15"];
+    edge [fontname="Helvetica", fontsize=9, color="#555555"];
+
+    subgraph cluster_presentation {
+        label="Presentation Layer (Client Browser)";
+        style="dashed";
+        color="#0056B3";
+        WebUI [label="Responsive Web UI\n(Student / Faculty / Admin Dashboards)", fillcolor="#E1F5FE"];
+    }
+
+    subgraph cluster_gateway {
+        label="API Gateway & Security Layer";
+        style="dashed";
+        color="#2E7D32";
+        APIGateway [label="REST API Gateway\n(TLS 1.3, Rate Limiting, JWT Auth & RBAC)", fillcolor="#E8F5E9"];
+    }
+
+    subgraph cluster_services {
+        label="Application Business Logic Layer";
+        style="dashed";
+        color="#F57C00";
+        UserAuthService [label="User & Account Service\n(Provisioning & Profiles)", fillcolor="#FFF3E0"];
+        CourseSchedService [label="Course & Schedule Service\n(Enrollment & Rubrics)", fillcolor="#FFF3E0"];
+        AttendanceService [label="Attendance Engine\n(Roll-Call & 48h Freeze Check)", fillcolor="#FFF3E0"];
+        GradeService [label="Grade Lifecycle Engine\n(Rubric Auto-Norm & State Machine)", fillcolor="#FFF3E0"];
+    }
+
+    subgraph cluster_data {
+        label="Data Persistence Layer";
+        style="dashed";
+        color="#C62828";
+        Database [label="Relational SQL Database\n(Accounts, Schedules, Attendance, Grades)", shape=cylinder, fillcolor="#FFEBEE"];
+    }
+
+    WebUI -> APIGateway [label=" HTTPS / TLS 1.3 (JSON) "];
+    APIGateway -> UserAuthService [label=" Authorized REST Calls "];
+    APIGateway -> CourseSchedService;
+    APIGateway -> AttendanceService;
+    APIGateway -> GradeService;
+
+    UserAuthService -> Database [label=" Parameterized ORM Queries "];
+    CourseSchedService -> Database;
+    AttendanceService -> Database;
+    GradeService -> Database;
+}

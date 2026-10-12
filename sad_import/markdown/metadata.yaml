@@ -1,0 +1,31 @@
+---
+title: "Software Architecture and Design Specification"
+subtitle: "Academic Management & Record System"
+author:
+  - "Tanmay T A (PES1UG22CS001)"
+  - "Uttam B S (PES1UG22CS002)"
+  - "Vibha Vasisht (PES1UG22CS003)"
+version: "1.0"
+status: "Draft"
+geometry: "margin=1in"
+documentclass: article
+fontsize: 11pt
+fontfamily: lmodern
+toc: true
+toc-depth: 3
+numbersections: true
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{float}
+  - \usepackage{hyperref}
+  - \floatplacement{figure}{H}
+  - \renewcommand{\arraystretch}{1.4}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \fancyhead[L]{\small Academic Management System SAD}
+  - \fancyhead[R]{\small Page \thepage}
+  - \fancyfoot{}
+---
