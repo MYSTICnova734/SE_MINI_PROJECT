@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "docs/srs/markdown/**"
+      - "docs/srs/diagrams/**"
 
 permissions:
   contents: write
@@ -29,20 +30,21 @@ jobs:
       - name: Build PDF
         run: bash docs/srs/build.sh
 
-      - name: Commit and push built PDF
+      - name: Commit and push built PDF and images
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add docs/srs/SRS.pdf
+          # Stage all changes in docs/srs (PDF + compiled diagram images)
+          git add docs/srs/
           if git diff --cached --quiet; then
-            echo "SRS.pdf unchanged, nothing to commit."
+            echo "SRS artifacts unchanged, nothing to commit."
             exit 0
           fi
-          git commit -m "docs: auto-build SRS.pdf [skip ci]"
+          git commit -m "docs: auto-build SRS.pdf and diagrams [skip ci]"
 
           for attempt in 1 2 3; do
-            if git pull --rebase origin main && git push origin HEAD:main; then
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
               echo "Pushed on attempt $attempt."
               exit 0
             fi

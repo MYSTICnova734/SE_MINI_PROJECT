@@ -1,0 +1,56 @@
+name: Build STP PDF
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/stp/markdown/**"
+      - "docs/stp/diagrams/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-stp-pdf
+  cancel-in-progress: false
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install pandoc + LaTeX + Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-latex-recommended lmodern graphviz
+
+      - name: Build PDF
+        run: bash docs/stp/build.sh
+
+      - name: Commit and push built PDF and images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Stage all changes in docs/stp (PDF + compiled diagram images)
+          git add docs/stp/
+          if git diff --cached --quiet; then
+            echo "STP artifacts unchanged, nothing to commit."
+            exit 0
+          fi
+          git commit -m "docs: auto-build STP.pdf and diagrams [skip ci]"
+
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push attempt $attempt failed, retrying..."
+            sleep $((RANDOM % 5 + 2))
+          done
+
+          echo "Could not push after 3 attempts."
+          exit 1
