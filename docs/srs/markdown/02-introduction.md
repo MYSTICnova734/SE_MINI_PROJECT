@@ -10,6 +10,7 @@ The scope explicitly excludes automated mail distribution (credentials are displ
 
 ## Audience
 This document is targeted toward:
+
 * **Software Engineering Faculty & Evaluators:** To review architecture compliance, constraint satisfaction, and acceptance criteria.
 * **Development Team (3 Students):** To guide API schema design, backend logic, and frontend role-based workflows during 2 one-week Agile sprints.
 * **System Administrators & Users:** To understand user role capabilities, system boundaries, and operational constraints.

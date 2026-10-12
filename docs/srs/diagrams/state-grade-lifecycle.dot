@@ -1,18 +1,19 @@
 digraph GradeLifecycle {
     rankdir=LR;
-    node [shape=ellipse, fontname="Helvetica", fontsize=10, style="filled", fillcolor="#F8F9FA", color="#333333"];
-    edge [fontname="Helvetica", fontsize=9, color="#333333"];
+    graph [pad="0.3", nodesep="0.9", ranksep="0.9"];
+    node [shape=rectangle, style="filled,rounded", fontname="Helvetica-Bold", fontsize=11, fillcolor="#F8F9FA", color="#333333", margin="0.2,0.15"];
+    edge [fontname="Helvetica", fontsize=10, color="#333333"];
 
-    Start [shape=point, width=0.2];
-    Draft [label="Draft\n(Faculty marks saved)", fillcolor="#FFF9C4"];
-    Submitted [label="Submitted\n(Faculty finalized weights)", fillcolor="#BBDEFB"];
-    Published [label="Published\n(Visible to Student)", fillcolor="#C8E6C9"];
-    UnderReview [label="Under Review\n(Student regrade request)", fillcolor="#FFCCBC"];
+    Start [shape=circle, label="", width=0.25, fillcolor="#333333", style=filled];
+    Draft [label="Draft\n(Faculty marks saved)", fillcolor="#FFF9C4", color="#FBC02D"];
+    Submitted [label="Submitted\n(Faculty finalized weights)", fillcolor="#E3F2FD", color="#1976D2"];
+    Published [label="Published\n(Visible to Student)", fillcolor="#E8F5E9", color="#388E3C"];
+    UnderReview [label="Under Review\n(Student regrade request)", fillcolor="#FFCCBC", color="#D84315"];
 
-    Start -> Draft [label=" Faculty inputs marks"];
-    Draft -> Draft [label=" Save updates"];
-    Draft -> Submitted [label=" Faculty submits grade"];
-    Submitted -> Published [label=" Admin approves & publishes"];
-    Published -> UnderReview [label=" Student requests review"];
-    UnderReview -> Published [label=" Faculty/Admin resolves & republishes"];
+    Start -> Draft [label=" Faculty inputs marks "];
+    Draft -> Draft [label=" Save updates "];
+    Draft -> Submitted [label=" Faculty submits grade "];
+    Submitted -> Published [label=" Admin approves & publishes "];
+    Published -> UnderReview [label=" Student requests review "];
+    UnderReview -> Published [label=" Faculty/Admin resolves & republishes "];
 }

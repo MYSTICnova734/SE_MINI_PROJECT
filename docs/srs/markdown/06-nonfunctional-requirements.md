@@ -2,7 +2,7 @@
 
 ## Non-Functional Requirements
 
-| Req ID | Requirement Statement (SMART) | Category | Priority | Acceptance Criteria / Measurement |
+| Req ID | Requirement Statement | Category | Priority | Acceptance Criteria / Measurement |
 | :--- | :--- | :--- | :--- | :--- |
 | **SYS-NF-001** | The backend API shall process 95% of standard HTTP requests with a response time of less than 800 ms under a baseline load of 500 active sessions. | Performance | High | 95th percentile latency $< 800\text{ ms}$ verified via automated load suite. Test: TC-PERF-01 |
 | **SYS-NF-002** | The database shall process 200 concurrent attendance and grade submission transactions without locking failures or transaction drops. | Concurrency | High | Automated concurrency test executes 200 simultaneous POST requests with 0% failure. Test: TC-PERF-02 |
@@ -21,7 +21,7 @@
 
 ### Security Requirements
 
-| Req ID | Requirement Statement (SMART) | Type | Priority | Source / Stakeholder | Acceptance Criteria / Test Ref | Comments / Dependencies |
+| Req ID | Requirement Statement | Type | Priority | Source / Stakeholder | Acceptance Criteria / Test Ref | Comments / Dependencies |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **PRJ-SR-001** | All network communications between client web applications and system backend API services shall enforce TLS 1.3 encryption. | Security | High | Security | AC-PRJ-SR-001: Plain HTTP requests redirect to HTTPS; weak ciphers rejected. Test: TC-SEC-01 | TLS 1.3 configuration. |
 | **PRJ-SR-002** | User account passwords shall be salted and hashed using bcrypt with a minimum work factor of 12 prior to database storage. | Security | High | Security | AC-PRJ-SR-002: Passwords stored strictly as bcrypt hashes in database tables. Test: TC-SEC-02 | Auth Module. |

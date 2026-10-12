@@ -1,7 +1,7 @@
 # Overall Description
 
 ## Product Perspective
-The Academic Management & Record System is an independent, responsive web service designed to replace paper-based academic tracking across a higher education institution of approximately 10,000 students and staff. It operates in a 3-tier web architecture consisting of a modern single-page web interface, a REST API application server, and a relational database store.
+The Academic Management & Record System is an independent, responsive web service designed to replace paper-based academic tracking across a higher education institution of approximately 10,000 students and staff. It operates in a standard 3-tier web architecture consisting of a modern single-page client interface, a RESTful API application server with middleware role-based access control, and a relational SQL database store.
 
 ## Major Product Functions
 * **Account Provisioning & Profile Management:** Administrative creation of Student, Faculty, and Admin accounts; mandatory password changes upon first login; self-service contact detail updates.

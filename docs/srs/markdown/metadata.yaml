@@ -19,9 +19,13 @@ header-includes:
   - \usepackage{booktabs}
   - \usepackage{longtable}
   - \usepackage{array}
+  - \usepackage{float}
   - \usepackage{hyperref}
+  - \floatplacement{figure}{H}
+  - \renewcommand{\arraystretch}{1.4}
   - \pagestyle{fancy}
-  - \fancyhead[L]{Academic Management System SRS}
-  - \fancyhead[R]{\leftmark}
-  - \fancyfoot[C]{\thepage}
+  - \fancyhf{}
+  - \fancyhead[L]{\small Academic Management System SRS}
+  - \fancyhead[R]{\small Page \thepage}
+  - \fancyfoot{}
 ---
