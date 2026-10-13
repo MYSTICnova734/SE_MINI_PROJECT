@@ -1,36 +1,32 @@
 digraph GradeLifecycleSequence {
-    graph [dpi=300, rankdir=TB, nodesep=0.5, ranksep=0.4, margin=0.2, bgcolor=transparent];
+    graph [dpi=300, rankdir=TB, nodesep=0.8, ranksep=0.4, margin=0.2, bgcolor=transparent];
     node [fontname="Helvetica", fontsize=10];
     edge [fontname="Helvetica", fontsize=9, arrowsize=0.8];
 
-    // Participants
-    subgraph cluster_participants {
-        style=invis;
-        { rank=same;
-            P_Client  [label="User Client\n(Faculty / Admin / Student)", shape=box, style="filled,rounded", fillcolor="#E1F5FE", color="#0288D1", width=2.0];
-            P_Gateway [label="API Gateway\n(Auth & RBAC)", shape=box, style="filled,rounded", fillcolor="#E8F5E9", color="#388E3C", width=2.0];
-            P_Engine  [label="Grade Lifecycle Engine\n(Business Rules)", shape=box, style="filled,rounded", fillcolor="#FFF3E0", color="#F57C00", width=2.0];
-            P_DB      [label="Database\n(Relational Store)", shape=cylinder, style=filled, fillcolor="#FFEBEE", color="#D32F2F", width=2.0];
-        }
+    // Participants (Group attribute forces vertical alignment per column)
+    { rank=same;
+        P_Client  [label="User Client\n(Faculty / Admin / Student)", shape=box, style="filled,rounded", fillcolor="#E1F5FE", color="#0288D1", width=2.4, group=Client];
+        P_Gateway [label="API Gateway\n(Auth & RBAC)", shape=box, style="filled,rounded", fillcolor="#E8F5E9", color="#388E3C", width=2.4, group=Gateway];
+        P_Engine  [label="Grade Lifecycle Engine\n(Business Rules)", shape=box, style="filled,rounded", fillcolor="#FFF3E0", color="#F57C00", width=2.4, group=Engine];
+        P_DB      [label="Database\n(Relational Store)", shape=cylinder, style=filled, fillcolor="#FFEBEE", color="#D32F2F", width=2.4, group=DB];
     }
 
-    // Sequence steps
+    // Invisible lifeline anchor nodes
     node [shape=point, width=0, height=0, style=invis];
 
-    // Lifelines
-    C1; C2; C3; C4; C5; C6; C7; C8;
-    P_Client -> C1 -> C2 -> C3 -> C4 -> C5 -> C6 -> C7 -> C8 [style=dashed, color="#888888", arrowhead=none];
+    C1 [group=Client]; C2 [group=Client]; C3 [group=Client]; C4 [group=Client]; C5 [group=Client]; C6 [group=Client]; C7 [group=Client]; C8 [group=Client];
+    G1 [group=Gateway]; G2 [group=Gateway]; G3 [group=Gateway]; G4 [group=Gateway]; G5 [group=Gateway]; G6 [group=Gateway]; G7 [group=Gateway]; G8 [group=Gateway];
+    E1 [group=Engine];  E2 [group=Engine];  E3 [group=Engine];  E4 [group=Engine];  E5 [group=Engine];  E6 [group=Engine];  E7 [group=Engine];  E8 [group=Engine];
+    D1 [group=DB];      D2 [group=DB];      D3 [group=DB];      D4 [group=DB];      D5 [group=DB];      D6 [group=DB];      D7 [group=DB];      D8 [group=DB];
 
-    G1; G2; G3; G4; G5; G6; G7; G8;
-    P_Gateway -> G1 -> G2 -> G3 -> G4 -> G5 -> G6 -> G7 -> G8 [style=dashed, color="#888888", arrowhead=none];
+    // Straight Vertical Lifelines (High weight prevents vertical bending)
+    edge [style=dashed, color="#888888", arrowhead=none, weight=100];
+    P_Client  -> C1 -> C2 -> C3 -> C4 -> C5 -> C6 -> C7 -> C8;
+    P_Gateway -> G1 -> G2 -> G3 -> G4 -> G5 -> G6 -> G7 -> G8;
+    P_Engine  -> E1 -> E2 -> E3 -> E4 -> E5 -> E6 -> E7 -> E8;
+    P_DB      -> D1 -> D2 -> D3 -> D4 -> D5 -> D6 -> D7 -> D8;
 
-    E1; E2; E3; E4; E5; E6; E7; E8;
-    P_Engine -> E1 -> E2 -> E3 -> E4 -> E5 -> E6 -> E7 -> E8 [style=dashed, color="#888888", arrowhead=none];
-
-    D1; D2; D3; D4; D5; D6; D7; D8;
-    P_DB -> D1 -> D2 -> D3 -> D4 -> D5 -> D6 -> D7 -> D8 [style=dashed, color="#888888", arrowhead=none];
-
-    // Align ranks
+    // Force horizontal level alignment
     { rank=same; C1; G1; }
     { rank=same; G2; E2; }
     { rank=same; E3; D3; }
@@ -40,7 +36,8 @@ digraph GradeLifecycleSequence {
     { rank=same; C7; G7; }
     { rank=same; G8; E8; }
 
-    // Messages
+    // Horizontal Messages (Low weight ensures horizontal arrows don't pull vertical columns)
+    edge [style=solid, weight=1];
     C1 -> G1 [label=" 1. POST /api/v1/grades (mark_entry, state=Draft) ", color="#0288D1", fontcolor="#0288D1"];
     G2 -> E2 [label=" 2. Validate JWT & RBAC (Faculty Role) ", color="#388E3C", fontcolor="#388E3C"];
     E3 -> D3 [label=" 3. Save Draft Score Records ", color="#F57C00", fontcolor="#F57C00"];

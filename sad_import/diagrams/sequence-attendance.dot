@@ -1,46 +1,93 @@
 digraph AttendanceSequence {
-    graph [dpi=300, rankdir=TB, nodesep=0.5, ranksep=0.4, margin=0.2, bgcolor=transparent];
-    node [fontname="Helvetica", fontsize=10];
-    edge [fontname="Helvetica", fontsize=9, arrowsize=0.8];
-
-    // Participants
-    subgraph cluster_participants {
-        style=invis;
-        { rank=same;
-            P_Faculty [label="Faculty Client\n(Browser)", shape=box, style="filled,rounded", fillcolor="#E1F5FE", color="#0288D1", width=1.8];
-            P_Gateway [label="API Gateway\n(Auth & RBAC)", shape=box, style="filled,rounded", fillcolor="#E8F5E9", color="#388E3C", width=1.8];
-            P_Service [label="Attendance Service\n(Business Logic)", shape=box, style="filled,rounded", fillcolor="#FFF3E0", color="#F57C00", width=1.8];
-            P_DB      [label="Database\n(Relational Store)", shape=cylinder, style=filled, fillcolor="#FFEBEE", color="#D32F2F", width=1.8];
-        }
-    }
-
-    // Sequence steps as invisible node anchors along lifelines
-    node [shape=point, width=0, height=0, style=invis];
-
-    // Lifelines
-    F1; F2; F3; F4; F5;
-    P_Faculty -> F1 -> F2 -> F3 -> F4 -> F5 [style=dashed, color="#888888", arrowhead=none];
-
-    G1; G2; G3; G4; G5;
-    P_Gateway -> G1 -> G2 -> G3 -> G4 -> G5 [style=dashed, color="#888888", arrowhead=none];
-
-    S1; S2; S3; S4; S5;
-    P_Service -> S1 -> S2 -> S3 -> S4 -> S5 [style=dashed, color="#888888", arrowhead=none];
-
-    D1; D2; D3; D4; D5;
-    P_DB -> D1 -> D2 -> D3 -> D4 -> D5 [style=dashed, color="#888888", arrowhead=none];
-
-    // Force horizontal alignment
-    { rank=same; F1; G1; }
-    { rank=same; G2; S2; }
-    { rank=same; S3; D3; }
-    { rank=same; D4; S4; }
-    { rank=same; S5; F5; }
-
-    // Message edges
-    F1 -> G1 [label=" 1. POST /api/v1/attendance (session_id, student_list) ", color="#0288D1", fontcolor="#0288D1"];
-    G2 -> S2 [label=" 2. Validate JWT & RBAC (Faculty Role) ", color="#388E3C", fontcolor="#388E3C"];
-    S3 -> D3 [label=" 3. Query Session Timestamp & Check <= 48h ", color="#F57C00", fontcolor="#F57C00"];
-    D4 -> S4 [label=" 4. Return Session Date / Persist Records ", style=dashed, color="#D32F2F", fontcolor="#D32F2F"];
-    S5 -> F5 [label=" 5. 200 OK (Attendance Recorded) / 403 Forbidden (Frozen) ", style=dashed, color="#0288D1", fontcolor="#0288D1"];
+ graph [dpi=300, rankdir=TB, nodesep=0.3, ranksep=0.2, margin=0.2, bgcolor=transparent, splines=line];
+ node [fontname="Helvetica", fontsize=10];
+ edge [fontname="Helvetica", fontsize=9, arrowsize=0.8];
+ { rank=same;
+  P_F [label="Faculty Client\n(Browser)", shape=box, style="filled,rounded", fillcolor="#E1F5FE", color="#0288D1", width=2.2, group=F];
+  P_G [label="API Gateway\n(Auth & RBAC)", shape=box, style="filled,rounded", fillcolor="#E8F5E9", color="#388E3C", width=2.2, group=G];
+  P_S [label="Attendance Service\n(Business Logic)", shape=box, style="filled,rounded", fillcolor="#FFF3E0", color="#F57C00", width=2.2, group=S];
+  P_D [label="Database\n(Relational Store)", shape=cylinder, style="filled", fillcolor="#FFEBEE", color="#D32F2F", width=2.2, group=D];
+ }
+ P_F -> P_G -> P_S -> P_D [style=invis, weight=10];
+ node [shape=point, width=0, height=0, style=invis];
+ { rank=same; F_L1; T_L1; G_L1; S_L1; D_L1; }
+ F_L1 [group=F];
+ G_L1 [group=G];
+ S_L1 [group=S];
+ D_L1 [group=D];
+ T_L1 [shape=plaintext, style=solid, width=0, height=0.1, margin="0.05,0", fontcolor="#0288D1", fontsize=9, label="1. POST /api/v1/attendance (session_id, student_list)"];
+ F_L1 -> T_L1 -> G_L1 -> S_L1 -> D_L1 [style=invis, weight=1];
+ { rank=same; F_M1; G_M1; S_M1; D_M1; }
+ F_M1 [group=F];
+ G_M1 [group=G];
+ S_M1 [group=S];
+ D_M1 [group=D];
+ F_M1 -> G_M1 -> S_M1 -> D_M1 [style=invis, weight=1];
+ { rank=same; F_L2; G_L2; T_L2; S_L2; D_L2; }
+ F_L2 [group=F];
+ G_L2 [group=G];
+ S_L2 [group=S];
+ D_L2 [group=D];
+ T_L2 [shape=plaintext, style=solid, width=0, height=0.1, margin="0.05,0", fontcolor="#388E3C", fontsize=9, label="2. Validate JWT & RBAC (Faculty Role)"];
+ F_L2 -> G_L2 -> T_L2 -> S_L2 -> D_L2 [style=invis, weight=1];
+ { rank=same; F_M2; G_M2; S_M2; D_M2; }
+ F_M2 [group=F];
+ G_M2 [group=G];
+ S_M2 [group=S];
+ D_M2 [group=D];
+ F_M2 -> G_M2 -> S_M2 -> D_M2 [style=invis, weight=1];
+ { rank=same; F_L3; G_L3; S_L3; T_L3; D_L3; }
+ F_L3 [group=F];
+ G_L3 [group=G];
+ S_L3 [group=S];
+ D_L3 [group=D];
+ T_L3 [shape=plaintext, style=solid, width=0, height=0.1, margin="0.05,0", fontcolor="#F57C00", fontsize=9, label="3. Query Session Timestamp & Check <= 48h"];
+ F_L3 -> G_L3 -> S_L3 -> T_L3 -> D_L3 [style=invis, weight=1];
+ { rank=same; F_M3; G_M3; S_M3; D_M3; }
+ F_M3 [group=F];
+ G_M3 [group=G];
+ S_M3 [group=S];
+ D_M3 [group=D];
+ F_M3 -> G_M3 -> S_M3 -> D_M3 [style=invis, weight=1];
+ { rank=same; F_L4; G_L4; S_L4; T_L4; D_L4; }
+ F_L4 [group=F];
+ G_L4 [group=G];
+ S_L4 [group=S];
+ D_L4 [group=D];
+ T_L4 [shape=plaintext, style=solid, width=0, height=0.1, margin="0.05,0", fontcolor="#D32F2F", fontsize=9, label="4. Return Session Date / Persist Records"];
+ F_L4 -> G_L4 -> S_L4 -> T_L4 -> D_L4 [style=invis, weight=1];
+ { rank=same; F_M4; G_M4; S_M4; D_M4; }
+ F_M4 [group=F];
+ G_M4 [group=G];
+ S_M4 [group=S];
+ D_M4 [group=D];
+ F_M4 -> G_M4 -> S_M4 -> D_M4 [style=invis, weight=1];
+ { rank=same; F_L5; G_L5; T_L5; S_L5; D_L5; }
+ F_L5 [group=F];
+ G_L5 [group=G];
+ S_L5 [group=S];
+ D_L5 [group=D];
+ T_L5 [shape=plaintext, style=solid, width=0, height=0.1, margin="0.05,0", fontcolor="#0288D1", fontsize=9, label="5. 200 OK (Attendance Recorded) / 403 Forbidden (Frozen)"];
+ F_L5 -> G_L5 -> T_L5 -> S_L5 -> D_L5 [style=invis, weight=1];
+ { rank=same; F_M5; G_M5; S_M5; D_M5; }
+ F_M5 [group=F];
+ G_M5 [group=G];
+ S_M5 [group=S];
+ D_M5 [group=D];
+ F_M5 -> G_M5 -> S_M5 -> D_M5 [style=invis, weight=1];
+ { rank=same; F_E; G_E; S_E; D_E; }
+ F_E [group=F];
+ G_E [group=G];
+ S_E [group=S];
+ D_E [group=D];
+ F_E -> G_E -> S_E -> D_E [style=invis];
+ edge [style=dashed, color="#888888", arrowhead=none, weight=100]; P_F -> F_L1 -> F_M1 -> F_L2 -> F_M2 -> F_L3 -> F_M3 -> F_L4 -> F_M4 -> F_L5 -> F_M5 -> F_E;
+ edge [style=dashed, color="#888888", arrowhead=none, weight=100]; P_G -> G_L1 -> G_M1 -> G_L2 -> G_M2 -> G_L3 -> G_M3 -> G_L4 -> G_M4 -> G_L5 -> G_M5 -> G_E;
+ edge [style=dashed, color="#888888", arrowhead=none, weight=100]; P_S -> S_L1 -> S_M1 -> S_L2 -> S_M2 -> S_L3 -> S_M3 -> S_L4 -> S_M4 -> S_L5 -> S_M5 -> S_E;
+ edge [style=dashed, color="#888888", arrowhead=none, weight=100]; P_D -> D_L1 -> D_M1 -> D_L2 -> D_M2 -> D_L3 -> D_M3 -> D_L4 -> D_M4 -> D_L5 -> D_M5 -> D_E;
+ F_M1 -> G_M1 [style=solid, color="#0288D1", arrowhead=normal, weight=0, constraint=false];
+ G_M2 -> S_M2 [style=solid, color="#388E3C", arrowhead=normal, weight=0, constraint=false];
+ S_M3 -> D_M3 [style=solid, color="#F57C00", arrowhead=normal, weight=0, constraint=false];
+ S_M4 -> D_M4 [style=dashed, color="#D32F2F", dir=back, arrowtail=normal, arrowhead=none, weight=0, constraint=false];
+ F_M5 -> S_M5 [style=dashed, color="#0288D1", dir=back, arrowtail=normal, arrowhead=none, weight=0, constraint=false];
 }
