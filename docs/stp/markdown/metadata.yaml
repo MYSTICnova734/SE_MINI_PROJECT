@@ -1,0 +1,32 @@
+---
+title: "Software Test Plan (STP)"
+subtitle: "Academic Management & Record System"
+author:
+  - "Tanmay T A (PES1UG22CS001)"
+  - "Uttam B S (PES1UG22CS002)"
+  - "Vibha Vasisht (PES1UG22CS003)"
+version: "1.0"
+status: "Approved"
+date: "12-10-2026"
+geometry: "margin=1in"
+documentclass: article
+fontsize: 11pt
+fontfamily: lmodern
+toc: true
+toc-depth: 3
+numbersections: false
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{float}
+  - \usepackage{hyperref}
+  - \floatplacement{figure}{H}
+  - \renewcommand{\arraystretch}{1.4}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \fancyhead[L]{\small Academic Management System STP}
+  - \fancyhead[R]{\small Page \thepage}
+  - \fancyfoot{}
+---

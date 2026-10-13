@@ -1,0 +1,27 @@
+digraph TestSchedule {
+    graph [dpi=300, rankdir=TB, nodesep=0.5, ranksep=0.5, margin=0.2, bgcolor=transparent];
+    node [shape=box, style="filled,rounded", fontname="Helvetica-Bold", fontsize=10, fillcolor="#F8F9FA", color="#333333", margin="0.2,0.15"];
+    edge [fontname="Helvetica", fontsize=9, color="#555555", penwidth=1.2];
+
+    subgraph cluster_sprint1 {
+        label="Sprint 1 (Week 1): Auth, Course & Attendance Module Testing";
+        style="dashed";
+        color="#0056B3";
+        S1_1 [label="Day 1-2: Test Plan Finalization & Seed Data Setup", fillcolor="#E1F5FE", color="#0288D1"];
+        S1_2 [label="Day 3-5: Unit & API Testing (Auth, Course, Self-Enrollment)", fillcolor="#E1F5FE", color="#0288D1"];
+        S1_3 [label="Day 6-7: Attendance Marking & 48-Hour Freeze Automated Tests", fillcolor="#E1F5FE", color="#0288D1"];
+        S1_1 -> S1_2 -> S1_3;
+    }
+
+    subgraph cluster_sprint2 {
+        label="Sprint 2 (Week 2): Grading, Analytics, NFRs & Sign-off";
+        style="dashed";
+        color="#2E7D32";
+        S2_1 [label="Day 8-10: Grade State Machine, Rubric Auto-Norm & Disputes", fillcolor="#E8F5E9", color="#388E3C"];
+        S2_2 [label="Day 11-12: Performance (200 POSTs, <800ms) & Security Audits", fillcolor="#E8F5E9", color="#388E3C"];
+        S2_3 [label="Day 13-14: User Acceptance Testing (UAT) & Final Sign-off", fillcolor="#E8F5E9", color="#388E3C"];
+        S2_1 -> S2_2 -> S2_3;
+    }
+
+    S1_3 -> S2_1 [label=" Sprint 1 Complete "];
+}

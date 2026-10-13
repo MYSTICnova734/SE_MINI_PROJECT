@@ -1,0 +1,14 @@
+digraph TestingLevels {
+    graph [dpi=300, rankdir=BT, nodesep=0.4, ranksep=0.5, margin=0.2, bgcolor=transparent];
+    node [shape=box, style="filled,rounded", fontname="Helvetica-Bold", fontsize=10, color="#333333", margin="0.2,0.15"];
+    edge [fontname="Helvetica", fontsize=9, color="#555555", penwidth=1.2];
+
+    Unit [label="Unit Testing\n(Business Logic, Rubric Auto-Norm & State Machine)", fillcolor="#E1F5FE", color="#0288D1", width=4.2];
+    Integration [label="Integration & API Testing\n(REST API Contracts, JWT Auth & RBAC Middleware)", fillcolor="#E8F5E9", color="#388E3C", width=4.6];
+    System [label="System & Security Testing\n(End-to-End Workflows, STRIDE, Latency & Load)", fillcolor="#FFF3E0", color="#F57C00", width=5.0];
+    UAT [label="User Acceptance Testing (UAT)\n(Stakeholder Verification & Scenario Sign-off)", fillcolor="#FFEBEE", color="#D32F2F", width=5.4];
+
+    Unit -> Integration [label=" Component Verified "];
+    Integration -> System [label=" Interfaces Verified "];
+    System -> UAT [label=" System Validated "];
+}
