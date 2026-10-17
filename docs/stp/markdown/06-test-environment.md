@@ -7,12 +7,12 @@
 
 ## Software
 
-* **Application Stack:** Node.js / Python application runtime, PostgreSQL / MySQL relational database.
+* **Application Stack:** Python application runtime, MySQL relational database.
 * **OS Environment:** Ubuntu Server 24.04 LTS.
 
 ## Tools
 
-* **Unit & Integration Testing:** Jest / PyTest.
+* **Unit & Integration Testing:** PyTest.
 * **API Testing:** Postman / Newman CLI test collection runner.
 * **Performance Testing:** Apache JMeter / k6 load testing framework.
 * **Security Scanning:** OWASP ZAP vulnerability scanner.
